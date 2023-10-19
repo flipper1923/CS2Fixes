@@ -22,8 +22,8 @@
 #include "convar.h"
 
 #define COMMAND_PREFIX "c_"
-#define CHAT_PREFIX		" \6[Admin]\1 "
-#define CHAT_PREFIXS	" \20[Server]\1 "
+#define CHAT_PREFIX	"\1[\3ADMIN\1] "
+#define CHAT_PREFIXS	"\1[\3AZL\1] "
 #define CHAT_PREFIXM	" \7[Medkit]\1 "
 #define CHAT_PREFIXV	" \3[VIP]\1 "
 
