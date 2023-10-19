@@ -201,7 +201,7 @@ CON_COMMAND_CHAT(rs, "reset your score")
 	player->m_iScore = 0;
 	player->m_iMVPs = 0;
 
-	ClientPrint(player, HUD_PRINTTALK, "\1[\3AZL\1] \4%s\1, you successfully reset your score.", player);
+	ClientPrint(player, HUD_PRINTTALK, "\1[\4AZL\1] You successfully reset your score.");
 }
 
 CON_COMMAND_CHAT(RS, "reset your score")
@@ -216,7 +216,7 @@ CON_COMMAND_CHAT(RS, "reset your score")
 	player->m_iScore = 0;
 	player->m_iMVPs = 0;
 
-	ClientPrint(player, HUD_PRINTTALK, "\1[\3AZL\1] \4%s\1, you successfully reset your score.", player);
+	ClientPrint(player, HUD_PRINTTALK, "\1[\4AZL\1] You successfully reset your score.");
 }
 //************************************end reset**************************************************************
 
