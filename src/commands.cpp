@@ -187,56 +187,6 @@ void ClientPrint(CBasePlayerController *player, int hud_dest, const char *msg, .
 
 	addresses::ClientPrint(player, hud_dest, buf, nullptr, nullptr, nullptr, nullptr);
 }
-CON_COMMAND_CHAT(medic, "medic")
-{
-	if (!player)
-		return;
-
-	int health = 0;
-	int iPlayer = player->GetPlayerSlot();
-
-	Z_CBaseEntity* pEnt = (Z_CBaseEntity*)player->GetPawn();
-
-	//ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"pZEPlayer testing...");
-
-	ZEPlayer* pZEPlayer = g_playerManager->GetPlayer(iPlayer);
-	if (!pZEPlayer)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"pZEPlayer not valid.");
-		return;
-	}
-
-	//ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"pZEPlayer valid.");
-
-	if (pEnt->m_iHealth() < 1)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"You need to be alive in order to use medkit.");
-		return;
-	}
-	
-	if (pZEPlayer->WasUsingMedkit())
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"You already used your medkit in this round");
-		return;
-	}
-
-		if (pEnt->m_iHealth() > 99)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"You have enough life.");
-		return;
-	}
-
-	health = pEnt->m_iHealth() + 50;
-
-	if (health > 100)
-		health = 100;
-
-	pEnt->m_iHealth = health;
-
-	pZEPlayer->SetUsedMedkit(true);
-
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"Medkit used! Your health is now %d", health);
-}
 
 //***************************************************Reset Score***********************************************
 CON_COMMAND_CHAT(rs, "reset your score")
@@ -251,7 +201,7 @@ CON_COMMAND_CHAT(rs, "reset your score")
 	player->m_iScore = 0;
 	player->m_iMVPs = 0;
 
-	ClientPrint(player, HUD_PRINTTALK, " \7[Reset Score]\1 You successfully reset your score.");
+	ClientPrint(player, HUD_PRINTTALK, "\1[\3AZL\1] \4%s\1, you successfully reset your score.", player);
 }
 
 CON_COMMAND_CHAT(RS, "reset your score")
@@ -266,59 +216,11 @@ CON_COMMAND_CHAT(RS, "reset your score")
 	player->m_iScore = 0;
 	player->m_iMVPs = 0;
 
-	ClientPrint(player, HUD_PRINTTALK, " \7[Reset Score]\1 You successfully reset your score.");
+	ClientPrint(player, HUD_PRINTTALK, "\1[\3AZL\1] \4%s\1, you successfully reset your score.", player);
 }
 //************************************end reset**************************************************************
 
 
-CON_COMMAND_CHAT(sound, "stop weapon sounds")
-{
-	if (!player)
-		return;
-
-	int iPlayer = player->GetPlayerSlot();
-
-	ZEPlayer *pZEPlayer = g_playerManager->GetPlayer(iPlayer);
-
-	// Something has to really go wrong for this to happen
-	if (!pZEPlayer)
-	{
-		Warning("%s Tried to access a null ZEPlayer!!\n", player->GetPlayerName());
-		return;
-	}
-
-	pZEPlayer->ToggleStopSound();
-
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You have %s weapon effects", pZEPlayer->IsUsingStopSound() ? "disabled" : "enabled");
-}
-
-CON_COMMAND_CHAT(help, "help")
-{
-		if (!player)
-		return;
-ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS "Use commands: !medic, !rs,!RS, !sound, !stats");
-}
-
-CON_COMMAND_CHAT(toggledecals, "toggle world decals, if you're into having 10 fps in ZE")
-{
-	if (!player)
-		return;
-
-	int iPlayer = player->GetPlayerSlot();
-
-	ZEPlayer *pZEPlayer = g_playerManager->GetPlayer(iPlayer);
-
-	// Something has to really go wrong for this to happen
-	if (!pZEPlayer)
-	{
-		Warning("%s Tried to access a null ZEPlayer!!\n", player->GetPlayerName());
-		return;
-	}
-
-	pZEPlayer->ToggleStopDecals();
-
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You have %s world decals", pZEPlayer->IsUsingStopDecals() ? "disabled" : "enabled");
-}
 CON_COMMAND_CHAT(say, "say something using console")
 {
 	ClientPrintAll(HUD_PRINTTALK, "%s", args.ArgS());
@@ -335,19 +237,6 @@ CON_COMMAND_CHAT(stats, "get your stats")
 	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS"Deaths: %d", stats->m_iDeaths.Get());
 	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS"Assists: %d", stats->m_iAssists.Get());
 	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS"Damage: %d", stats->m_iDamage.Get());
-}
-
-CON_COMMAND_CHAT(vip, "vip info")
-{
-	if (!player)
-		return;
-
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1Starting health: \5 100-115.");
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1Starting armor: \5 110-200.");
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1Money add every round: \5 1000-5000.");
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1Starting with: \5 defeuser, he, smoke, molotov, flashbang, healthshot .");
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1Smoke color: \5 green, \14blue, \7red, \2r\4a\3n\5d\6o\7m.");
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1For buying VIP, contact \7FOUNDER.");
 }
 
 // Lookup a weapon classname in the weapon map and "initialize" it.
