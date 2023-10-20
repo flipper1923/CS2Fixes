@@ -535,7 +535,7 @@ const char *CS2Fixes::GetLogTag()
 
 const char *CS2Fixes::GetAuthor()
 {
-	return "xen & poggu modified and compiled by GSM-RO";
+	return "xen & poggu modified and compiled by AZzeL";
 }
 
 const char *CS2Fixes::GetDescription()
