@@ -145,7 +145,7 @@ CON_COMMAND_CHAT(mute, "mutes a player")
 
 	ZEPlayer* pPlayer = g_playerManager->GetPlayer(player->GetPlayerSlot());
 
-	if (!pPlayer->IsAdminFlagSet(ADMFLAG_BAN))
+	if (!pPlayer->IsAdminFlagSet(ADMFLAG_SLAY))
 	{
 		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX"You don't have access to this command.");
 		return;
@@ -226,7 +226,7 @@ CON_COMMAND_CHAT(unmute, "unmutes a player")
 
 	ZEPlayer *pPlayer = g_playerManager->GetPlayer(player->GetPlayerSlot());
 
-	if (!pPlayer->IsAdminFlagSet(ADMFLAG_UNBAN))
+	if (!pPlayer->IsAdminFlagSet(ADMFLAG_SLAY))
 	{
 		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You don't have access to this command.");
 		return;
@@ -296,7 +296,7 @@ CON_COMMAND_CHAT(gag, "gag a player")
 
 	ZEPlayer *pPlayer = g_playerManager->GetPlayer(player->GetPlayerSlot());
 
-	if (!pPlayer->IsAdminFlagSet(ADMFLAG_BAN))
+	if (!pPlayer->IsAdminFlagSet(ADMFLAG_SLAY))
 	{
 		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You don't have access to this command.");
 		return;
@@ -376,7 +376,7 @@ CON_COMMAND_CHAT(ungag, "ungags a player")
 
 	ZEPlayer *pPlayer = g_playerManager->GetPlayer(player->GetPlayerSlot());
 
-	if (!pPlayer->IsAdminFlagSet(ADMFLAG_UNBAN))
+	if (!pPlayer->IsAdminFlagSet(ADMFLAG_SLAY))
 	{
 		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You don't have access to this command.");
 		return;
@@ -448,7 +448,7 @@ CON_COMMAND_CHAT(silent, "silent a player")
 
 	ZEPlayer *pPlayer = g_playerManager->GetPlayer(player->GetPlayerSlot());
 
-	if (!pPlayer->IsAdminFlagSet(ADMFLAG_BAN))
+	if (!pPlayer->IsAdminFlagSet(ADMFLAG_SLAY))
 	{
 		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You don't have access to this command.");
 		return;
@@ -556,7 +556,7 @@ CON_COMMAND_CHAT(unsilent, "unsilent a player")
 
 	ZEPlayer *pPlayer = g_playerManager->GetPlayer(player->GetPlayerSlot());
 
-	if (!pPlayer->IsAdminFlagSet(ADMFLAG_UNBAN))
+	if (!pPlayer->IsAdminFlagSet(ADMFLAG_SLAY))
 	{
 		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You don't have access to this command.");
 		return;
