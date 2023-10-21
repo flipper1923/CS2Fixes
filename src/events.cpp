@@ -100,7 +100,7 @@ GAME_EVENT_F(player_connect)
 {
         CBasePlayerController *pController = (CBasePlayerController*)pEvent->GetPlayerController("userid");
 
-	ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIXS, "Player \3%s \1connected.", pController->GetPlayerName());
+	ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIXS, "Player \3%s \1connected.", pController->GetPlayerName());
 }
 
 GAME_EVENT_F(player_spawn)
