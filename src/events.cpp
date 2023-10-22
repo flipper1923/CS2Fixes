@@ -96,11 +96,20 @@ GAME_EVENT_F(player_team)
 		pEvent->SetBool("silent", true);
 }
 
+GAME_EVENT_F(player_disconnect)
+{
+	if (g_bBlockTeamMessages)
+		pEvent->SetBool("silent", true);
+}
+
 GAME_EVENT_F(player_connect)
 {
         CBasePlayerController *pController = (CBasePlayerController*)pEvent->GetPlayerController("userid");
 
-	ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIXS, "Player \3%s \1connected.", pController->GetPlayerName());
+	for (int i = 1; i <= MAXPLAYERS; i++)
+	{
+		ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIXS, "Player \3%s \1connected.", pController->GetPlayerName());
+	}
 }
 
 GAME_EVENT_F(player_spawn)
