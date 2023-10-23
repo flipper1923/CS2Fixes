@@ -649,6 +649,8 @@ if ( caseInsensitiveStringCompare(args[2], "T" )) {
 
 		if (nType < ETargetType::ALL)
 			PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "moved", szAction);
+			//*************************slay********************
+		pTarget->GetPawn()->CommitSuicide(false, true);
 	}
 
 	PrintMultiAdminAction(nType, pszCommandPlayerName, "moved", szAction);
