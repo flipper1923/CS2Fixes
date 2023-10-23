@@ -488,7 +488,7 @@ void CS2Fixes::Hook_CheckTransmit(CCheckTransmitInfo **ppInfoList, int infoCount
 		if (!pSelfZEPlayer)
 			continue;
 
-		for (int i = 1; i <= MAXPLAYERS; i++)
+		for (int i = 1; i <= g_playerManager->GetMaxPlayers(); i++)
 		{
 			if (!pSelfZEPlayer->ShouldBlockTransmit(i - 1))
 				continue;
@@ -542,7 +542,7 @@ const char *CS2Fixes::GetLicense()
 
 const char *CS2Fixes::GetVersion()
 {
-	return "1.8.0";
+	return "1.0.0.0";
 }
 
 const char *CS2Fixes::GetDate()
