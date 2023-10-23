@@ -678,7 +678,7 @@ CON_COMMAND_CHAT(bring, "bring a player")
 	PrintMultiAdminAction(nType, player->GetPlayerName(), "brought");
 }
 
-CON_COMMAND_CHAT(setteam, "set a player's team")
+CON_COMMAND_CHAT(!move, "set a player's team")
 {
 	int iCommandPlayer = -1;
 
@@ -755,7 +755,7 @@ CON_COMMAND_CHAT(noclip, "toggle noclip on yourself")
 
 	ZEPlayer *pPlayer = g_playerManager->GetPlayer(iCommandPlayer);
 	
-	if (!pPlayer->IsAdminFlagSet(ADMFLAG_SLAY))
+	if (!pPlayer->IsAdminFlagSet(ADMFLAG_ROOT))
 	{
 		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You don't have access to this command.");
 		return;
