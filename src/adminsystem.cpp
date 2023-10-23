@@ -611,16 +611,16 @@ CON_COMMAND_CHAT(move, "set a player's team")
 		return;
 	}
 	int iTeam = -1;
-	//char cTeam[] = "SPEC";
+
 if ( caseInsensitiveStringCompare(args[2], "T" )) {
    iTeam = 2;
-   //strcpy(cTeam, "T");
+  
 } else if ( caseInsensitiveStringCompare(args[2], "CT" )) {
    iTeam = 3;
-   //strcpy(cTeam, "CT");
+   
 } else if ( caseInsensitiveStringCompare(args[2], "SPEC" )) {
    iTeam = 1;
-   //strcpy(cTeam, "SPEC");
+   
 }
 
 	// int iTeam = V_StringToInt32(args[2], -1);
@@ -636,7 +636,7 @@ if ( caseInsensitiveStringCompare(args[2], "T" )) {
 	constexpr const char *teams[] = {"none", "spectators", "terrorists", "counter-terrorists"};
 
 	char szAction[64];
-	V_snprintf(szAction, sizeof(szAction), " to %s.", teams[iTeam]);
+	V_snprintf(szAction, sizeof(szAction), " to \4%s.", teams[iTeam]);
 
 	for (int i = 0; i < iNumClients; i++)
 	{
@@ -652,50 +652,22 @@ if ( caseInsensitiveStringCompare(args[2], "T" )) {
 	}
 
 	PrintMultiAdminAction(nType, pszCommandPlayerName, "moved", szAction);
+	for (int i = 0; i < iNumClients; i++)
+	{
+		CBasePlayerController *pTarget = (CBasePlayerController *)g_pEntitySystem->GetBaseEntity((CEntityIndex)(pSlots[i] + 1));
+
+		if (!pTarget)
+			continue;
+
+		pTarget->GetPawn()->CommitSuicide(false, true);
+
+		if (nType < ETargetType::ALL)
+		//	PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "slayed");
+	}
 }
 //******************************************END MOVE************************************************
-/*	int iNumClients = 0;
-	int pSlots[MAXPLAYERS];
 
-	ETargetType nType = g_playerManager->TargetPlayerString(iCommandPlayer, args[1], iNumClients, pSlots);
-
-	if (!iNumClients)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Target not found.");
-		return;
-	}
-
-	int iTeam = V_StringToInt32(args[2], -1);
-
-	if (iTeam < CS_TEAM_NONE || iTeam > CS_TEAM_CT)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Invalid team specified, range is 0-3.");
-		return;
-	}
-
-	const char *pszCommandPlayerName = player ? player->GetPlayerName() : "Console";
-
-	constexpr const char *teams[] = {"none", "spectators", "terrorists", "counter-terrorists"};
-
-	char szAction[64];
-	V_snprintf(szAction, sizeof(szAction), " to %s.", teams[iTeam]);
-
-	for (int i = 0; i < iNumClients; i++)
-	{
-		CCSPlayerController *pTarget = (CCSPlayerController *)g_pEntitySystem->GetBaseEntity((CEntityIndex)(pSlots[i] + 1));
-
-		if (!pTarget)
-			continue;
-
-		addresses::CCSPlayerController_SwitchTeam(pTarget, iTeam);
-
-		if (nType < ETargetType::ALL)
-			PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "moved", szAction);
-	}
-
-	PrintMultiAdminAction(nType, pszCommandPlayerName, "moved", szAction);
-}*/
-//*********************** SILENT********************************************************************
+//******************************************SILENT***************************************************
 
 CON_COMMAND_CHAT(silence, "silenced a player")
 {
