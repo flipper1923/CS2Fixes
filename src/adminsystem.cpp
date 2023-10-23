@@ -620,7 +620,7 @@ if ( caseInsensitiveStringCompare(args[2], "T" )) {
    
 } else if ( caseInsensitiveStringCompare(args[2], "SPEC" )) {
    iTeam = 1;
-   
+   //strcpy(cTeam, "SPEC");
 }
 
 	// int iTeam = V_StringToInt32(args[2], -1);
@@ -636,7 +636,7 @@ if ( caseInsensitiveStringCompare(args[2], "T" )) {
 	constexpr const char *teams[] = {"none", "spectators", "terrorists", "counter-terrorists"};
 
 	char szAction[64];
-	V_snprintf(szAction, sizeof(szAction), " to \4%s.", teams[iTeam]);
+	V_snprintf(szAction, sizeof(szAction), " to %s.", teams[iTeam]);
 
 	for (int i = 0; i < iNumClients; i++)
 	{
@@ -655,7 +655,7 @@ if ( caseInsensitiveStringCompare(args[2], "T" )) {
 }
 //******************************************END MOVE************************************************
 
-//******************************************SILENT********************************************************************
+//******************************************SILENT**************************************************
 
 CON_COMMAND_CHAT(silence, "silenced a player")
 {
