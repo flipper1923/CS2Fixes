@@ -58,7 +58,7 @@ void UnregisterEventListeners()
 }
 
 // CONVAR_TODO
-bool g_bForceCT = true;
+bool g_bForceCT = false; //edited from true
 
 CON_COMMAND_F(c_force_ct, "toggle forcing CTs on every round", FCVAR_SPONLY | FCVAR_LINKED_CONCOMMAND)
 {
