@@ -652,13 +652,10 @@ if ( caseInsensitiveStringCompare(args[2], "T" )) {
 	}
 
 	PrintMultiAdminAction(nType, pszCommandPlayerName, "moved", szAction);
-	
-	const char *pszCommandPlayerName = player ? player->GetPlayerName() : "Console";
-
 }
 //******************************************END MOVE************************************************
 
-//******************************************SILENT***************************************************
+//******************************************SILENT********************************************************************
 
 CON_COMMAND_CHAT(silence, "silenced a player")
 {
