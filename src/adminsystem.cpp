@@ -570,6 +570,13 @@ CON_COMMAND_CHAT(slay, "slay a player")
 	PrintMultiAdminAction(nType, pszCommandPlayerName, "slayed");
 }
 //****************************************************MOVE******************************************************
+bool caseInsensitiveStringCompare( const std::string& str1, const std::string& str2 ) {
+    std::string str1Cpy( str1 );
+    std::string str2Cpy( str2 );
+    std::transform( str1Cpy.begin(), str1Cpy.end(), str1Cpy.begin(), ::tolower );
+    std::transform( str2Cpy.begin(), str2Cpy.end(), str2Cpy.begin(), ::tolower );
+    return ( str1Cpy == str2Cpy );
+}
 CON_COMMAND_CHAT(move, "set a player's team")
 {
 	int iCommandPlayer = -1;
@@ -588,7 +595,7 @@ CON_COMMAND_CHAT(move, "set a player's team")
 
 		if (args.ArgC() < 3)
 		{
-			ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Usage: !setteam <name> <team (0-3)>");
+			ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX" Usage: !move <name> <team (t,ct,spec)>");
 			return;
 		}
 	}
@@ -603,12 +610,24 @@ CON_COMMAND_CHAT(move, "set a player's team")
 		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Target not found.");
 		return;
 	}
+		int iTeam = -1;
+	char cTeam[] = "SPEC";
+if ( caseInsensitiveStringCompare(args[2], "T" )) {
+   iTeam = 2;
+   strcpy(cTeam, "T");
+} else if ( caseInsensitiveStringCompare(args[2], "CT" )) {
+   iTeam = 3;
+   strcpy(cTeam, "CT");
+} else if ( caseInsensitiveStringCompare(args[2], "SPEC" )) {
+   iTeam = 1;
+   strcpy(cTeam, "SPEC");
+}
 
 	int iTeam = V_StringToInt32(args[2], -1);
 
 	if (iTeam < CS_TEAM_NONE || iTeam > CS_TEAM_CT)
 	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Invalid team specified, range is 0-3.");
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Invalid team specified, use t,ct,spec");
 		return;
 	}
 
