@@ -655,20 +655,6 @@ if ( caseInsensitiveStringCompare(args[2], "T" )) {
 	
 	const char *pszCommandPlayerName = player ? player->GetPlayerName() : "Console";
 
-	for (int i = 0; i < iNumClients; i++)
-	{
-		CBasePlayerController *pTarget = (CBasePlayerController *)g_pEntitySystem->GetBaseEntity((CEntityIndex)(pSlots[i] + 1));
-
-		if (!pTarget)
-			continue;
-
-		pTarget->GetPawn()->CommitSuicide(false, true);
-
-		if (nType < ETargetType::ALL)
-			PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "slayed");
-	}
-
-	PrintMultiAdminAction(nType, pszCommandPlayerName, "slayed");
 }
 //******************************************END MOVE************************************************
 
