@@ -678,7 +678,7 @@ CON_COMMAND_CHAT(bring, "bring a player")
 	PrintMultiAdminAction(nType, player->GetPlayerName(), "brought");
 }
 
-CON_COMMAND_CHAT(!move, "set a player's team")
+CON_COMMAND_CHAT(move, "set a player's team")
 {
 	int iCommandPlayer = -1;
 
