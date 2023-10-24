@@ -39,6 +39,7 @@ extern CEntitySystem *g_pEntitySystem;
 extern IVEngineServer2* g_pEngineServer2;
 extern int g_targetPawn;
 extern int g_targetController;
+#include "addons.h"
 
 WeaponMapEntry_t WeaponMap[] = {
 	{"bizon",		  "weapon_bizon",			 1400, 26},
@@ -248,9 +249,9 @@ CON_COMMAND_CHAT(medic, "medic")
 	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"Medkit used! Your health is now %d", health);
 }
 
-#include "reset.h"
-#include "admins.h"
-#include "mesage.h"
+//#include "reset.h"
+//#include "admins.h"
+//#include "mesage.h"
 
 CON_COMMAND_CHAT(sound, "toggle weapon sounds")
 {
