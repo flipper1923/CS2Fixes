@@ -764,20 +764,22 @@ CON_COMMAND_CHAT(silence, "silenced a player")
 
 	PrintMultiAdminAction(nType, pszCommandPlayerName, "silenced", szAction);
 }
-//******************END OF SILECE*****NSILENCE*******************************************************************
+//******************END OF SILECE*****UNSILENCE*******************************************************************
 CON_COMMAND_CHAT(unsilence, "unsilenced a player")
 {
-	if (!player)
-		return;
+	int iCommandPlayer = -1;
 
-	int iCommandPlayer = player->GetPlayerSlot();
-
-	ZEPlayer *pPlayer = g_playerManager->GetPlayer(player->GetPlayerSlot());
-
-	if (!pPlayer->IsAdminFlagSet(ADMFLAG_UNBAN))
+	if (player)
 	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You don't have access to this command.");
-		return;
+		iCommandPlayer = player->GetPlayerSlot();
+
+		ZEPlayer *pPlayer = g_playerManager->GetPlayer(iCommandPlayer);
+
+		if (!pPlayer->IsAdminFlagSet(ADMFLAG_UNBAN))
+		{
+			ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You don't have access to this command.");
+			return;
+		}
 	}
 
 	if (args.ArgC() < 2)
@@ -797,27 +799,8 @@ CON_COMMAND_CHAT(unsilence, "unsilenced a player")
 		return;
 	}
 
-	for (int i = 0; i < iNumClients; i++)
-	{
-		CBasePlayerController *pTarget = (CBasePlayerController *)g_pEntitySystem->GetBaseEntity((CEntityIndex)(pSlot[i] + 1));
+	const char *pszCommandPlayerName = player ? player->GetPlayerName() : "Console";
 
-		if (!pTarget)
-			continue;
-
-		ZEPlayer *pTargetPlayer = g_playerManager->GetPlayer(pSlot[i]);
-
-		if (pTargetPlayer->IsFakeClient())
-			continue;
-
-		if (!g_pAdminSystem->FindAndRemoveInfraction(pTargetPlayer, CInfractionBase::Gag) && nType < ETargetType::ALL)
-		{
-			ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "\7%s\1 is not gagged.", pTarget->GetPlayerName());
-			continue;
-		}
-
-		if (nType < ETargetType::ALL)
-			ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIX ADMIN_PREFIX "ungagged \7%s\1.", player->GetPlayerName(), pTarget->GetPlayerName());
-	}
 	for (int i = 0; i < iNumClients; i++)
 	{
 		CBasePlayerController *pTarget = (CBasePlayerController *)g_pEntitySystem->GetBaseEntity((CEntityIndex)(pSlot[i] + 1));
@@ -832,32 +815,45 @@ CON_COMMAND_CHAT(unsilence, "unsilenced a player")
 
 		if (!g_pAdminSystem->FindAndRemoveInfraction(pTargetPlayer, CInfractionBase::Mute) && nType < ETargetType::ALL)
 		{
-			ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "\7%s\1 is not muted.", pTarget->GetPlayerName());
+			ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "%s is not muted.", pTarget->GetPlayerName());
 			continue;
 		}
 
 		if (nType < ETargetType::ALL)
-			ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIX ADMIN_PREFIX "unmuted \7%s\1.", player->GetPlayerName(), pTarget->GetPlayerName());
-			ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIX ADMIN_PREFIX "UnSilenced \7%s\1.", player->GetPlayerName(), pTarget->GetPlayerName());
+			PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "unmuted");
 	}
 
 	g_pAdminSystem->SaveInfractions();
 
-	//g_pAdminSystem->SaveInfractions();
-
-	switch (nType)
+	PrintMultiAdminAction(nType, pszCommandPlayerName, "unmuted");
+		for (int i = 0; i < iNumClients; i++)
 	{
-	case ETargetType::ALL:
-		ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIX ADMIN_PREFIX "UnSilenced everyone.", player->GetPlayerName());
-		break;
-	case ETargetType::T:
-		ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIX ADMIN_PREFIX "UnSilenced terrorists.", player->GetPlayerName());
-		break;
-	case ETargetType::CT:
-		ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIX ADMIN_PREFIX "UnSilenced counter-terrorists.", player->GetPlayerName());
-		break;
+		CBasePlayerController *pTarget = (CBasePlayerController *)g_pEntitySystem->GetBaseEntity((CEntityIndex)(pSlot[i] + 1));
+
+		if (!pTarget)
+			continue;
+
+		ZEPlayer *pTargetPlayer = g_playerManager->GetPlayer(pSlot[i]);
+
+		if (pTargetPlayer->IsFakeClient())
+			continue;
+
+		if (!g_pAdminSystem->FindAndRemoveInfraction(pTargetPlayer, CInfractionBase::Gag) && nType < ETargetType::ALL)
+		{
+			ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "%s is not gagged.", pTarget->GetPlayerName());
+			continue;
+		}
+
+		if (nType < ETargetType::ALL)
+			PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "ungagged");
 	}
+
+	g_pAdminSystem->SaveInfractions();
+
+	PrintMultiAdminAction(nType, pszCommandPlayerName, "ungagged");
+	PrintMultiAdminAction(nType, pszCommandPlayerName, "unsilenced");
 }
+
 //**************************************END UNSILENCE*****************************************************
 
 CON_COMMAND_CHAT(noclip, "toggle noclip on yourself")
