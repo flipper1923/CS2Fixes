@@ -740,6 +740,28 @@ CON_COMMAND_CHAT(silence, "silenced a player")
 
 	g_pAdminSystem->SaveInfractions();
 
+	for (int i = 0; i < iNumClients; i++)
+	{
+		CBasePlayerController *pTarget = (CBasePlayerController *)g_pEntitySystem->GetBaseEntity((CEntityIndex)(pSlot[i] + 1));
+
+		if (!pTarget)
+			continue;
+
+		ZEPlayer *pTargetPlayer = g_playerManager->GetPlayer(pSlot[i]);
+
+		if (pTargetPlayer->IsFakeClient())
+			continue;
+
+		CInfractionBase *infraction = new CGagInfraction(iDuration, pTargetPlayer->GetSteamId64());
+
+		// We're overwriting the infraction, so remove the previous one first
+		g_pAdminSystem->FindAndRemoveInfraction(pTargetPlayer, CInfractionBase::Gag);
+		g_pAdminSystem->AddInfraction(infraction);
+		infraction->ApplyInfraction(pTargetPlayer);
+}
+
+	g_pAdminSystem->SaveInfractions();
+
 	PrintMultiAdminAction(nType, pszCommandPlayerName, "silenced", szAction);
 }
 //******************END OF SILECE*****NSILENCE*******************************************************************
