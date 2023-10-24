@@ -98,7 +98,7 @@ private:
 	CBitVec<MAXPLAYERS> m_shouldTransmit;
 	int m_iTotalDamage;
 };
-/*
+
 class CPlayerManager
 {
 public:
@@ -106,7 +106,7 @@ public:
 	{
 		V_memset(m_vecPlayers, 0, sizeof(m_vecPlayers));
 		m_nUsingStopSound = 0;
-		m_nUsingSilenceSound = -1; // On by default
+		m_nUsingSilenceSound = 0; // On by default
 		m_nUsingStopDecals = -1; // On by default
 
 		if (late)
@@ -155,5 +155,5 @@ private:
 	uint64 m_nUsingSilenceSound;
 	uint64 m_nUsingStopDecals;
 };
-*/
+
 extern CPlayerManager *g_playerManager;
