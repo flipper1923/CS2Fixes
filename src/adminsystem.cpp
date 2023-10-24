@@ -661,22 +661,24 @@ if ( caseInsensitiveStringCompare(args[2], "T" )) {
 
 CON_COMMAND_CHAT(silence, "silenced a player")
 {
-	if (!player)
-		return;
+	int iCommandPlayer = -1;
 
-	int iCommandPlayer = player->GetPlayerSlot();
-
-	ZEPlayer *pPlayer = g_playerManager->GetPlayer(player->GetPlayerSlot());
-
-	if (!pPlayer->IsAdminFlagSet(ADMFLAG_BAN))
+	if (player)
 	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You don't have access to this command.");
-		return;
+		iCommandPlayer = player->GetPlayerSlot();
+
+		ZEPlayer *pPlayer = g_playerManager->GetPlayer(iCommandPlayer);
+
+		if (!pPlayer->IsAdminFlagSet(ADMFLAG_BAN))
+		{
+			ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You don't have access to this command.");
+			return;
+		}
 	}
 
 	if (args.ArgC() < 3)
 	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Usage: !silece <name> <duration/0 (permanent)>");
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Usage: !silence <name> <duration/0 (permanent)>");
 		return;
 	}
 
@@ -691,16 +693,26 @@ CON_COMMAND_CHAT(silence, "silenced a player")
 		return;
 	}
 
-	char *end;
-	int iDuration = strtol(args[2], &end, 10);
+	int iDuration = V_StringToInt32(args[2], -1);
 
-	if (*end)
+	if (iDuration < 0)
 	{
 		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Invalid duration.");
 		return;
 	}
 
-for (int i = 0; i < iNumClients; i++)
+	if (iDuration == 0 && nType >= ETargetType::ALL)
+	{
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You may only permanently silenced individuals.");
+		return;
+	}
+
+	const char *pszCommandPlayerName = player ? player->GetPlayerName() : "Console";
+
+	char szAction[64];
+	V_snprintf(szAction, sizeof(szAction), " for %i minutes", iDuration);
+
+	for (int i = 0; i < iNumClients; i++)
 	{
 		CBasePlayerController* pTarget = (CBasePlayerController*)g_pEntitySystem->GetBaseEntity((CEntityIndex)(pSlot[i] + 1));
 
@@ -720,50 +732,15 @@ for (int i = 0; i < iNumClients; i++)
 		infraction->ApplyInfraction(pTargetPlayer);
 		g_pAdminSystem->SaveInfractions();
 
-		if (nType < ETargetType::ALL)
-			ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIX ADMIN_PREFIX "muted \7%s\1 for %i minutes.", player->GetPlayerName(), pTarget->GetPlayerName(), iDuration);
+		if (iDuration > 0)
+			PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "silenced", szAction);
+		else
+			PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "permanently silenced");
 	}
-
-	for (int i = 0; i < iNumClients; i++)
-	{
-		CBasePlayerController *pTarget = (CBasePlayerController *)g_pEntitySystem->GetBaseEntity((CEntityIndex)(pSlot[i] + 1));
-
-		if (!pTarget)
-			continue;
-
-		ZEPlayer *pTargetPlayer = g_playerManager->GetPlayer(pSlot[i]);
-
-		if (pTargetPlayer->IsFakeClient())
-			continue;
-
-		CInfractionBase *infraction = new CGagInfraction(iDuration, pTargetPlayer->GetSteamId64());
-
-		// We're overwriting the infraction, so remove the previous one first
-		g_pAdminSystem->FindAndRemoveInfraction(pTargetPlayer, CInfractionBase::Gag);
-		g_pAdminSystem->AddInfraction(infraction);
-		infraction->ApplyInfraction(pTargetPlayer);
-
-		if (nType < ETargetType::ALL)
-			ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIX ADMIN_PREFIX "gagged \7%s\1 for %i minutes.", player->GetPlayerName(), pTarget->GetPlayerName(), iDuration);
-			ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIX ADMIN_PREFIX "Silenced \7%s\1 for %i minutes.", player->GetPlayerName(), pTarget->GetPlayerName(), iDuration);
-	}
-
 
 	g_pAdminSystem->SaveInfractions();
 
-	switch (nType)
-	{
-	case ETargetType::ALL:
-		ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIX ADMIN_PREFIX "Silenced everyone for %i minutes.", player->GetPlayerName(), iDuration);
-		break;
-	case ETargetType::T:
-		ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIX ADMIN_PREFIX "Silenced terrorists for %i minutes.", player->GetPlayerName(), iDuration);
-		break;
-	case ETargetType::CT:
-		ClientPrintAll(HUD_PRINTTALK, CHAT_PREFIX ADMIN_PREFIX "Silenced counter-terrorists for %i minutes.", player->GetPlayerName(), iDuration);
-		break;
-	}
-	
+	PrintMultiAdminAction(nType, pszCommandPlayerName, "silenced", szAction);
 }
 //******************END OF SILECE*****NSILENCE*******************************************************************
 CON_COMMAND_CHAT(unsilence, "unsilenced a player")
