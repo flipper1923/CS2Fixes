@@ -248,11 +248,9 @@ CON_COMMAND_CHAT(medic, "medic")
 	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"Medkit used! Your health is now %d", health);
 }
 
-
 #include "reset.h"
-#include admins.h
-#include mesage.h
-
+#include "admins.h"
+#include "mesage.h"
 
 CON_COMMAND_CHAT(sound, "toggle weapon sounds")
 {
