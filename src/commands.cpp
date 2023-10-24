@@ -157,7 +157,8 @@ void ParseChatCommand(const char *pMessage, CCSPlayerController *pController)
 	}
 	else
 	{
-		ParseWeaponCommand(pController, args[0]);
+		ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIX"This command does not exist.");
+		//ParseWeaponCommand(pController, args[0]);
 	}
 }
 
@@ -191,7 +192,7 @@ void ClientPrint(CBasePlayerController *player, int hud_dest, const char *msg, .
 		ConMsg("%s\n", buf);
 }
 
-CON_COMMAND_CHAT(stopsound, "toggle weapon sounds")
+CON_COMMAND_CHAT(sound, "toggle weapon sounds")
 {
 	if (!player)
 		return;
@@ -206,118 +207,128 @@ CON_COMMAND_CHAT(stopsound, "toggle weapon sounds")
 	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You have %s weapon sounds.", bSilencedSet ? "disabled" : !bSilencedSet && !bStopSet ? "silenced" : "enabled");
 }
 
-CON_COMMAND_CHAT(toggledecals, "toggle world decals, if you're into having 10 fps in ZE")
+CON_COMMAND_CHAT(say, "say something using console")
 {
-	if (!player)
-		return;
-
-	int iPlayer = player->GetPlayerSlot();
-	bool bSet = !g_playerManager->IsPlayerUsingStopDecals(iPlayer);
-
-	g_playerManager->SetPlayerStopDecals(iPlayer, bSet);
-
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You have %s world decals.", bSet ? "disabled" : "enabled");
+	ClientPrintAll(HUD_PRINTTALK, "%s", args.ArgS());
 }
 
-CON_COMMAND_CHAT(myuid, "test")
+CON_COMMAND_CHAT(medic, "medic")
 {
 	if (!player)
 		return;
 
+	int health = 0;
 	int iPlayer = player->GetPlayerSlot();
 
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Your userid is %i, slot: %i, retrieved slot: %i", g_pEngineServer2->GetPlayerUserId(iPlayer).Get(), iPlayer, g_playerManager->GetSlotFromUserId(g_pEngineServer2->GetPlayerUserId(iPlayer).Get()));
+	Z_CBaseEntity* pEnt = (Z_CBaseEntity*)player->GetPawn();
+
+	//ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"pZEPlayer testing...");
+
+	ZEPlayer* pZEPlayer = g_playerManager->GetPlayer(iPlayer);
+	if (!pZEPlayer)
+	{
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"pZEPlayer not valid.");
+		return;
+	}
+
+	//ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"pZEPlayer valid.");
+
+	if (pEnt->m_iHealth() < 1)
+	{
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"You need to be alive in order to use medkit.");
+		return;
+	}
+	
+	if (pZEPlayer->WasUsingMedkit())
+	{
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"You already used your medkit in this round");
+		return;
+	}
+
+		if (pEnt->m_iHealth() > 99)
+	{
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"You have enough life.");
+		return;
+	}
+
+	health = pEnt->m_iHealth() + 50;
+
+	if (health > 100)
+		health = 100;
+
+	pEnt->m_iHealth = health;
+
+	pZEPlayer->SetUsedMedkit(true);
+
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"Medkit used! Your health is now %d", health);
 }
 
-// CONVAR_TODO
-static constexpr float g_flMaxZteleDistance = 150.0f;
-
-CON_COMMAND_CHAT(ztele, "teleport to spawn")
+//***************************************************Reset Score***********************************************
+CON_COMMAND_CHAT(rs, "reset your score")
 {
 	if (!player)
-	{
-		ClientPrint(player, HUD_PRINTCONSOLE, CHAT_PREFIX "You cannot use this command from the server console.");
 		return;
-	}
+	
+	player->m_pActionTrackingServices->m_matchStats().m_iKills = 0;
+	player->m_pActionTrackingServices->m_matchStats().m_iDeaths = 0;
+	player->m_pActionTrackingServices->m_matchStats().m_iAssists = 0;
+	player->m_pActionTrackingServices->m_matchStats().m_iDamage = 0;
+	player->m_iScore = 0;
+	player->m_iMVPs = 0;
 
-	//Count spawnpoints (info_player_counterterrorist & info_player_terrorist)
-	SpawnPoint* spawn = nullptr;
-	CUtlVector<SpawnPoint*> spawns;
-	while (nullptr != (spawn = (SpawnPoint*)UTIL_FindEntityByClassname(spawn, "info_player_")))
-	{
-		if (spawn->m_bEnabled())
-			spawns.AddToTail(spawn);
-	}
-
-	//Pick and get position of random spawnpoint
-	int randomindex = rand() % spawns.Count()+1;
-	Vector spawnpos = spawns[randomindex]->GetAbsOrigin();
-
-	//Here's where the mess starts
-	CBasePlayerPawn* pPawn = player->GetPawn();
-
-	if (!pPawn)
-		return;
-
-	if (!pPawn->IsAlive())
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX"You cannot teleport when dead!");
-		return;
-	}
-
-	//Get initial player position so we can do distance check
-	Vector initialpos = pPawn->GetAbsOrigin();
-
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX"Teleporting to spawn in 5 seconds.");
-
-	CHandle<CBasePlayerPawn> handle = pPawn->GetHandle();
-
-	new CTimer(5.0f, false, false, [spawnpos, handle, initialpos]()
-	{
-		CBasePlayerPawn *pPawn = handle.Get();
-
-		if (!pPawn)
-			return;
-
-		Vector endpos = pPawn->GetAbsOrigin();
-
-		if (initialpos.DistTo(endpos) < g_flMaxZteleDistance)
-		{
-			pPawn->SetAbsOrigin(spawnpos);
-			ClientPrint(pPawn->GetController(), HUD_PRINTTALK, CHAT_PREFIX "You have been teleported to spawn.");
-		}
-		else
-		{
-			ClientPrint(pPawn->GetController(), HUD_PRINTTALK, CHAT_PREFIX "Teleport failed! You moved too far.");
-			return;
-		}
-	});
+	ClientPrint(player, HUD_PRINTTALK, " \7[Reset Score]\1 You successfully reset your score.");
 }
 
-// CONVAR_TODO
-static constexpr int g_iMaxHideDistance = 2000;
-
-CON_COMMAND_CHAT(hide, "hides nearby teammates")
+CON_COMMAND_CHAT(RS, "reset your score")
 {
 	if (!player)
-	{
-		ClientPrint(player, HUD_PRINTCONSOLE, CHAT_PREFIX "You cannot use this command from the server console.");
 		return;
-	}
+	
+	player->m_pActionTrackingServices->m_matchStats().m_iKills = 0;
+	player->m_pActionTrackingServices->m_matchStats().m_iDeaths = 0;
+	player->m_pActionTrackingServices->m_matchStats().m_iAssists = 0;
+	player->m_pActionTrackingServices->m_matchStats().m_iDamage = 0;
+	player->m_iScore = 0;
+	player->m_iMVPs = 0;
 
-	if (args.ArgC() < 2)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Usage: !hide <distance> (0 to disable)");
+	ClientPrint(player, HUD_PRINTTALK, " \7[Reset Score]\1 You successfully reset your score.");
+}
+//************************************end reset**************************************************************
+//************************************Admins chat**************************************************************
+
+CON_COMMAND_CHAT(u, "admins chat")
+{
+    if (!player)
+        return;
+
+    int iCommandPlayer = player->GetPlayerSlot();
+
+    ZEPlayer *pPlayer = g_playerManager->GetPlayer(iCommandPlayer);
+    if (args.ArgC() < 2)
+    {
+        
+        ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Usage: /u <message> to admins");
+        return;
+    }
+	
+for (int i = 0; i < MAXPLAYERS; i++)
+{
+    ZEPlayer* pAdmin = g_playerManager->GetPlayer(i);
+    CBasePlayerController* cPlayer = (CBasePlayerController*)g_pEntitySystem->GetBaseEntity((CEntityIndex)(i + 1));
+
+    if (!cPlayer || !pAdmin || pAdmin->IsFakeClient() || !pAdmin->IsAdminFlagSet(ADMFLAG_SLAY))
+        continue;
+        ClientPrint(cPlayer, HUD_PRINTTALK," \3*************\14Admins Chat\3*************");
+        ClientPrint(cPlayer, HUD_PRINTTALK, " \7[Admins]\4 %s \1from \7%s ", args.ArgS(), player->GetPlayerName());
+        ClientPrint(cPlayer, HUD_PRINTTALK, " \3**************************************");
+}
+	//ClientPrint(cPlayer, HUD_PRINTTALK, " \7[To Admins] \4%s \1, message sent to \7Admins", args.ArgS());
+	ClientPrint(player, HUD_PRINTTALK, " \7[To Admins] \4%s \1, message sent to \7Admins", args.ArgS());
+}
+CON_COMMAND_CHAT(sound, "stop weapon sounds")
+{
+	if (!player)
 		return;
-	}
-
-	int distance = V_StringToInt32(args[1], -1);
-
-	if (distance > g_iMaxHideDistance || distance < 0)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You can only hide players between 0 and %i units away.", g_iMaxHideDistance);
-		return;
-	}
 
 	int iPlayer = player->GetPlayerSlot();
 
@@ -330,14 +341,43 @@ CON_COMMAND_CHAT(hide, "hides nearby teammates")
 		return;
 	}
 
-	pZEPlayer->SetHideDistance(distance);
+	pZEPlayer->ToggleStopSound();
 
-	if (distance == 0)
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Hiding teammates is now disabled.");
-	else
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Now hiding teammates within %i units.", distance);
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You have %s weapon effects", pZEPlayer->IsUsingStopSound() ? "disabled" : "enabled");
 }
 
+CON_COMMAND_CHAT(help, "help")
+{
+		if (!player)
+		return;
+ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS "Use commands: !medic, !rs,!RS, !sound, !stats, !vip, !stats, /u(admins chat)");
+}
+
+CON_COMMAND_CHAT(stats, "get your stats")
+{
+	if (!player)
+		return;
+
+	CSMatchStats_t *stats = &player->m_pActionTrackingServices->m_matchStats();
+
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS"Kills: %d", stats->m_iKills.Get());
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS"Deaths: %d", stats->m_iDeaths.Get());
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS"Assists: %d", stats->m_iAssists.Get());
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS"Damage: %d", stats->m_iDamage.Get());
+}
+
+CON_COMMAND_CHAT(vip, "vip info")
+{
+	if (!player)
+		return;
+
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1Starting health: \5 100-115.");
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1Starting armor: \5 110-200.");
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1Money add every round: \5 1000-5000.");
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1Starting with: \5 defeuser, he, smoke, molotov, flashbang, healthshot .");
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1Smoke color: \5 green, \14blue, \7red, \2r\4a\3n\5d\6o\7m.");
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1For buying VIP, contact \7FOUNDER.");
+}
 
 #if _DEBUG
 CON_COMMAND_CHAT(message, "message someone")
@@ -362,11 +402,6 @@ CON_COMMAND_CHAT(message, "message someone")
 	CSingleRecipientFilter filter(uid);
 
 	UTIL_SayTextFilter(filter, buf, nullptr, 0);
-}
-
-CON_COMMAND_CHAT(say, "say something using console")
-{
-	ClientPrintAll(HUD_PRINTTALK, "%s", args.ArgS());
 }
 
 CON_COMMAND_CHAT(takemoney, "take your money")

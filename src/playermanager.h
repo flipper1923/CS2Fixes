@@ -46,6 +46,7 @@ public:
 		m_SteamID = nullptr;
 		m_bGagged = false;
 		m_bMuted = false;
+		m_bUsedMedkit = false;
 		m_iHideDistance = 0;
 		m_bConnected = false;
 		m_iTotalDamage = 0;
@@ -80,8 +81,11 @@ public:
 	void OnAuthenticated();
 	void CheckAdmin();
 	void CheckInfractions();
+	bool WasUsingMedkit() { return m_bUsedMedkit; }
+	void SetUsedMedkit(bool used) { m_bUsedMedkit = used; }
 
 private:
+	bool m_bUsedMedkit;
 	bool m_bAuthenticated;
 	bool m_bConnected;
 	const CSteamID* m_SteamID;
