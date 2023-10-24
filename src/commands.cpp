@@ -191,7 +191,7 @@ void ClientPrint(CBasePlayerController *player, int hud_dest, const char *msg, .
 	else
 		ConMsg("%s\n", buf);
 }
-
+/*
 CON_COMMAND_CHAT(sound, "toggle weapon sounds")
 {
 	if (!player)
@@ -206,7 +206,7 @@ CON_COMMAND_CHAT(sound, "toggle weapon sounds")
 
 	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You have %s weapon sounds.", bSilencedSet ? "disabled" : !bSilencedSet && !bStopSet ? "silenced" : "enabled");
 }
-
+*/
 CON_COMMAND_CHAT(say, "say something using console")
 {
 	ClientPrintAll(HUD_PRINTTALK, "%s", args.ArgS());
