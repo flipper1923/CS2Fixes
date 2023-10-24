@@ -352,10 +352,11 @@ void CPlayerManager::SetPlayerStopDecals(int slot, bool set)
 	else
 		m_nUsingStopDecals &= ~((uint64)1 << slot);
 }
-
+/*
 void CPlayerManager::ResetPlayerFlags(int slot)
 {
 	SetPlayerStopSound(slot, false);
 	SetPlayerSilenceSound(slot, true);
 	SetPlayerStopDecals(slot, true);
 }
+*/

@@ -98,7 +98,7 @@ private:
 	CBitVec<MAXPLAYERS> m_shouldTransmit;
 	int m_iTotalDamage;
 };
-
+/*
 class CPlayerManager
 {
 public:
@@ -155,5 +155,5 @@ private:
 	uint64 m_nUsingSilenceSound;
 	uint64 m_nUsingStopDecals;
 };
-
+*/
 extern CPlayerManager *g_playerManager;

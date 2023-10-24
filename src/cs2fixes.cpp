@@ -305,7 +305,7 @@ void CS2Fixes::Hook_StartupServer(const GameSessionConfiguration_t& config, ISou
 	g_pEntitySystem = interfaces::pGameResourceServiceServer->GetGameEntitySystem();
 }
 
-
+/*
 void CS2Fixes::Hook_PostEvent(CSplitScreenSlot nSlot, bool bLocalOnly, int nClientCount, const uint64* clients,
 	INetworkSerializable* pEvent, const void* pData, unsigned long nSize, NetChannelBufType_t bufType)
 {
@@ -353,7 +353,7 @@ void CS2Fixes::Hook_PostEvent(CSplitScreenSlot nSlot, bool bLocalOnly, int nClie
 		*(uint64 *)clients &= ~g_playerManager->GetStopDecalsMask();
 	}
 }
-
+*/
 void CS2Fixes::AllPluginsLoaded()
 {
 	/* This is where we'd do stuff that relies on the mod or other plugins 

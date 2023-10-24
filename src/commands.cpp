@@ -317,7 +317,7 @@ CON_COMMAND_CHAT(ws, "fake ws")
 
     ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS "\3%s\1, Play 2h to have access to !ws.", player->GetPlayerName());
 }
-
+/*
 CON_COMMAND_CHAT(sound, "toggle weapon sounds")
 {
 	if (!player)
@@ -332,7 +332,7 @@ CON_COMMAND_CHAT(sound, "toggle weapon sounds")
 
 	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You have %s weapon sounds.", bSilencedSet ? "disabled" : !bSilencedSet && !bStopSet ? "silenced" : "enabled");
 }
-
+*/
 CON_COMMAND_CHAT(help, "help")
 {
 		if (!player)
