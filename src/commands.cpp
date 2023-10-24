@@ -325,25 +325,19 @@ for (int i = 0; i < MAXPLAYERS; i++)
 	//ClientPrint(cPlayer, HUD_PRINTTALK, " \7[To Admins] \4%s \1, message sent to \7Admins", args.ArgS());
 	ClientPrint(player, HUD_PRINTTALK, " \7[To Admins] \4%s \1, message sent to \7Admins", args.ArgS());
 }
-CON_COMMAND_CHAT(sound, "stop weapon sounds")
+CON_COMMAND_CHAT(sound, "toggle weapon sounds")
 {
 	if (!player)
 		return;
 
 	int iPlayer = player->GetPlayerSlot();
+	bool bStopSet = g_playerManager->IsPlayerUsingStopSound(iPlayer);
+	bool bSilencedSet = g_playerManager->IsPlayerUsingSilenceSound(iPlayer);
 
-	ZEPlayer *pZEPlayer = g_playerManager->GetPlayer(iPlayer);
+	g_playerManager->SetPlayerStopSound(iPlayer, bSilencedSet);
+	g_playerManager->SetPlayerSilenceSound(iPlayer, !bSilencedSet && !bStopSet);
 
-	// Something has to really go wrong for this to happen
-	if (!pZEPlayer)
-	{
-		Warning("%s Tried to access a null ZEPlayer!!\n", player->GetPlayerName());
-		return;
-	}
-
-	pZEPlayer->ToggleStopSound();
-
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You have %s weapon effects", pZEPlayer->IsUsingStopSound() ? "disabled" : "enabled");
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You have %s weapon sounds.", bSilencedSet ? "disabled" : !bSilencedSet && !bStopSet ? "silenced" : "enabled");
 }
 
 CON_COMMAND_CHAT(help, "help")
