@@ -191,22 +191,7 @@ void ClientPrint(CBasePlayerController *player, int hud_dest, const char *msg, .
 	else
 		ConMsg("%s\n", buf);
 }
-/*
-CON_COMMAND_CHAT(sound, "toggle weapon sounds")
-{
-	if (!player)
-		return;
 
-	int iPlayer = player->GetPlayerSlot();
-	bool bStopSet = g_playerManager->IsPlayerUsingStopSound(iPlayer);
-	bool bSilencedSet = g_playerManager->IsPlayerUsingSilenceSound(iPlayer);
-
-	g_playerManager->SetPlayerStopSound(iPlayer, bSilencedSet);
-	g_playerManager->SetPlayerSilenceSound(iPlayer, !bSilencedSet && !bStopSet);
-
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You have %s weapon sounds.", bSilencedSet ? "disabled" : !bSilencedSet && !bStopSet ? "silenced" : "enabled");
-}
-*/
 CON_COMMAND_CHAT(say, "say something using console")
 {
 	ClientPrintAll(HUD_PRINTTALK, "%s", args.ArgS());
@@ -312,7 +297,7 @@ CON_COMMAND_CHAT(u, "admins chat")
     }
 	
 for (int i = 0; i < MAXPLAYERS; i++)
-{
+	{
     ZEPlayer* pAdmin = g_playerManager->GetPlayer(i);
     CBasePlayerController* cPlayer = (CBasePlayerController*)g_pEntitySystem->GetBaseEntity((CEntityIndex)(i + 1));
 
@@ -321,10 +306,18 @@ for (int i = 0; i < MAXPLAYERS; i++)
         ClientPrint(cPlayer, HUD_PRINTTALK," \3*************\14Admins Chat\3*************");
         ClientPrint(cPlayer, HUD_PRINTTALK, " \7[Admins]\4 %s \1from \7%s ", args.ArgS(), player->GetPlayerName());
         ClientPrint(cPlayer, HUD_PRINTTALK, " \3**************************************");
-}
+	}
 	//ClientPrint(cPlayer, HUD_PRINTTALK, " \7[To Admins] \4%s \1, message sent to \7Admins", args.ArgS());
 	ClientPrint(player, HUD_PRINTTALK, " \7[To Admins] \4%s \1, message sent to \7Admins", args.ArgS());
 }
+CON_COMMAND_CHAT(ws, "fake ws")
+{
+    if (!player)
+        return;
+
+    ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS "\3%s\1, Play 2h to have access to !ws.", player->GetPlayerName());
+}
+
 CON_COMMAND_CHAT(sound, "toggle weapon sounds")
 {
 	if (!player)
