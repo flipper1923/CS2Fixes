@@ -1,11 +1,11 @@
-//************************************Admins chat**************************************************************
-
+/* ************************************Admins chat**************************************************************
+*/
 CON_COMMAND_CHAT(u, "admins chat")
 {
     if (!player)
         return;
 
-    int iCommandPlayer = player->GetPlayerSlot();
+    int iCommandPlayer = player->GetPlayerSlot(); 
 
     ZEPlayer *pPlayer = g_playerManager->GetPlayer(iCommandPlayer);
     if (args.ArgC() < 2)
@@ -83,4 +83,56 @@ CON_COMMAND_CHAT(vip, "vip info")
 	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1Starting with: \5 defeuser, he, smoke, molotov, flashbang, healthshot .");
 	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1Smoke color: \5 green, \14blue, \7red, \2r\4a\3n\5d\6o\7m.");
 	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXV"\1For buying VIP, contact \7FOUNDER.");
+}
+
+//****************************************MEDIC********************************************************
+CON_COMMAND_CHAT(medic, "medic")
+{
+	if (!player)
+		return;
+
+	int health = 0;
+	int iPlayer = player->GetPlayerSlot();
+
+	Z_CBaseEntity* pEnt = (Z_CBaseEntity*)player->GetPawn();
+
+	//ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"pZEPlayer testing...");
+
+	ZEPlayer* pZEPlayer = g_playerManager->GetPlayer(iPlayer);
+	if (!pZEPlayer)
+	{
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"pZEPlayer not valid.");
+		return;
+	}
+
+	//ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"pZEPlayer valid.");
+
+	if (pEnt->m_iHealth() < 1)
+	{
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"You need to be alive in order to use medkit.");
+		return;
+	}
+	
+	if (pZEPlayer->WasUsingMedkit())
+	{
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"You already used your medkit in this round");
+		return;
+	}
+
+		if (pEnt->m_iHealth() > 99)
+	{
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"You have enough life.");
+		return;
+	}
+
+	health = pEnt->m_iHealth() + 50;
+
+	if (health > 100)
+		health = 100;
+
+	pEnt->m_iHealth = health;
+
+	pZEPlayer->SetUsedMedkit(true);
+
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"Medkit used! Your health is now %d", health);
 }
