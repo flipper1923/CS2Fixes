@@ -35,6 +35,7 @@ CAdminSystem* g_pAdminSystem = nullptr;
 CUtlMap<uint32, FnChatCommandCallback_t> g_CommandList(0, 0, DefLessFunc(uint32));
 
 #define ADMIN_PREFIX "Admin %s has "
+#include "admincon.h"
 
 void PrintSingleAdminAction(const char *pszAdminName, const char *pszTargetName, const char *pszAction, const char *pszAction2 = "")
 {
