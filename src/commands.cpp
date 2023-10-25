@@ -198,61 +198,6 @@ CON_COMMAND_CHAT(say, "say something using console")
 	ClientPrintAll(HUD_PRINTTALK, "%s", args.ArgS());
 }
 
-CON_COMMAND_CHAT(medic, "medic")
-{
-	if (!player)
-		return;
-
-	int health = 0;
-	int iPlayer = player->GetPlayerSlot();
-
-	Z_CBaseEntity* pEnt = (Z_CBaseEntity*)player->GetPawn();
-
-	//ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"pZEPlayer testing...");
-
-	ZEPlayer* pZEPlayer = g_playerManager->GetPlayer(iPlayer);
-	if (!pZEPlayer)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"pZEPlayer not valid.");
-		return;
-	}
-
-	//ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"pZEPlayer valid.");
-
-	if (pEnt->m_iHealth() < 1)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"You need to be alive in order to use medkit.");
-		return;
-	}
-	
-	if (pZEPlayer->WasUsingMedkit())
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"You already used your medkit in this round");
-		return;
-	}
-
-		if (pEnt->m_iHealth() > 99)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"You have enough life.");
-		return;
-	}
-
-	health = pEnt->m_iHealth() + 50;
-
-	if (health > 100)
-		health = 100;
-
-	pEnt->m_iHealth = health;
-
-	pZEPlayer->SetUsedMedkit(true);
-
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"Medkit used! Your health is now %d", health);
-}
-
-//#include "reset.h"
-//#include "admins.h"
-//#include "mesage.h"
-
 CON_COMMAND_CHAT(sound, "toggle weapon sounds")
 {
 	if (!player)
