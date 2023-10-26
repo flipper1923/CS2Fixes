@@ -47,6 +47,11 @@
 #define ADMFLAG_CUSTOM4				(1<<18)		/**< Convenience macro for Admin_Custom4 as a FlagBit */
 #define ADMFLAG_CUSTOM5				(1<<19)		/**< Convenience macro for Admin_Custom5 as a FlagBit */
 #define ADMFLAG_CUSTOM6				(1<<20)		/**< Convenience macro for Admin_Custom6 as a FlagBit */
+#define ADMFLAG_CUSTOM7				(1<<20)		/**< Convenience macro for Admin_Custom6 as a FlagBit */
+#define ADMFLAG_CUSTOM8				(1<<21)		/**< Convenience macro for Admin_Custom6 as a FlagBit */
+#define ADMFLAG_CUSTOM9				(1<<22)		/**< Convenience macro for Admin_Custom6 as a FlagBit */
+#define ADMFLAG_CUSTOM10				(1<<23)		/**< Convenience macro for Admin_Custom6 as a FlagBit */
+#define ADMFLAG_CUSTOM11				(1<<24)		/**< Convenience macro for Admin_Custom6 as a FlagBit */
 
 
 class CInfractionBase
