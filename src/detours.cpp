@@ -202,7 +202,7 @@ void FASTCALL Detour_UTIL_SayText2Filter(
         {
             V_snprintf(sBuffer, sizeof(sBuffer), " \1[\2CO-OWNER\1]\14 %s: \4%s", param1, param2);
         }
-        else if (pPlayer->IsAdminFlagSet(DMFLAG_ROOT)) // u
+        else if (pPlayer->IsAdminFlagSet(ADMFLAG_ROOT)) // u
         {
             V_snprintf(sBuffer, sizeof(sBuffer), " \1[\2OWNER\1]\14 %s: \2%s", param1, param2);
         }
