@@ -1,22 +1,20 @@
 /* ************************************Admins chat**************************************************************
 */
-CON_COMMAND_CHAT(@, "admins chat")
+CON_COMMAND_CHAT(u, "admins chat")
 {
     if (!player)
         return;
 
     int iCommandPlayer = player->GetPlayerSlot(); 
-	if(args[1] == '@')
-		continue;
 
     ZEPlayer *pPlayer = g_playerManager->GetPlayer(iCommandPlayer);
     if (args.ArgC() < 2)
     {
         
-        ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Usage: U@ <message> to admins");
+        ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Usage: /u <message> to admins");
         return;
     }
-		
+	
 for (int i = 0; i < MAXPLAYERS; i++)
 	{
     ZEPlayer* pAdmin = g_playerManager->GetPlayer(i);
