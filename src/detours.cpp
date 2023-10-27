@@ -151,11 +151,14 @@ bool FASTCALL Detour_IsHearingClient(void* serverClient, int index)
 
 void FASTCALL Detour_UTIL_SayTextFilter(IRecipientFilter &filter, const char *pText, CCSPlayerController *pPlayer, uint64 eMessageType)
 {
+	int entindex = filter.GetRecipientIndex(0).Get();
+	CCSPlayerController *target = (CCSPlayerController *)g_pEntitySystem->GetBaseEntity((CEntityIndex)entindex);
+
 	if (pPlayer)
 		return UTIL_SayTextFilter(filter, pText, pPlayer, eMessageType);
 
 	char buf[256];
-	V_snprintf(buf, sizeof(buf), "%s %s", " \7CONSOLE:\4", pText + sizeof("Console:"));
+	V_snprintf(buf, sizeof(buf), "%s %s", " \7 :\4", pText + sizeof("Console:"));
 
 	UTIL_SayTextFilter(filter, buf, pPlayer, eMessageType);
 }
@@ -186,21 +189,13 @@ void FASTCALL Detour_UTIL_SayText2Filter(
         }
     
     UTIL_SayTextFilter(filter, sBuffer, pEntity, eMessageType);
-/*
-#ifdef _DEBUG
-    CPlayerSlot slot = filter.GetRecipientIndex(0);
-	CCSPlayerController* target = CCSPlayerController::FromSlot(slot);
-
-	if (target)
-		Message("Chat from %s to %s: %s\n", param1, target->GetPlayerName(), param2);
-#endif
-*/
-	UTIL_SayText2Filter(filter, pEntity, eMessageType, msg_name, param1, param2, param3, param4);
 }
+
+
 
 void FASTCALL Detour_Host_Say(CCSPlayerController *pController, CCommand &args, bool teamonly, int unk1, const char *unk2)
 {
-	bool bGagged = pController && pController->GetZEPlayer()->IsGagged();
+	bool bGagged = pController && g_playerManager->GetPlayer(pController->GetPlayerSlot())->IsGagged();
 
 	if (!bGagged && *args[1] != '/')
 	{
@@ -221,7 +216,7 @@ void FASTCALL Detour_Host_Say(CCSPlayerController *pController, CCommand &args, 
 		}
 	}
 
-	if (*args[1] == '!' || *args[1] == '/')
+	if (*args[1] == '!' || *args[1] == '/'|| *args[1] == '@')
 		ParseChatCommand(args[1], pController);
 }
 
