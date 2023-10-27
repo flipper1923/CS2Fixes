@@ -186,6 +186,7 @@ void FASTCALL Detour_UTIL_SayText2Filter(
         }
     
     UTIL_SayTextFilter(filter, sBuffer, pEntity, eMessageType);
+/*
 #ifdef _DEBUG
     CPlayerSlot slot = filter.GetRecipientIndex(0);
 	CCSPlayerController* target = CCSPlayerController::FromSlot(slot);
@@ -193,7 +194,7 @@ void FASTCALL Detour_UTIL_SayText2Filter(
 	if (target)
 		Message("Chat from %s to %s: %s\n", param1, target->GetPlayerName(), param2);
 #endif
-
+*/
 	UTIL_SayText2Filter(filter, pEntity, eMessageType, msg_name, param1, param2, param3, param4);
 }
 
