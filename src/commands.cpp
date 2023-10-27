@@ -298,11 +298,6 @@ CON_COMMAND_CHAT(message, "message someone")
 	UTIL_SayTextFilter(filter, buf, nullptr, 0);
 }
 
-CON_COMMAND_CHAT(say, "say something using console")
-{
-	ClientPrintAll(HUD_PRINTTALK, "%s", args.ArgS());
-}
-
 CON_COMMAND_CHAT(takemoney, "take your money")
 {
 	if (!player)
