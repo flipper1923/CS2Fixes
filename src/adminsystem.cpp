@@ -488,8 +488,8 @@ CON_COMMAND_CHAT_FLAGS(move, "set a player's team", ADMFLAG_SLAY)
 	}
 
 	int iTeam = -1;
-
-if ( caseInsensitiveStringCompare(args[2], "T" )) {
+	//int iTeam = V_StringToInt32(args[2], -1);
+	if ( caseInsensitiveStringCompare(args[2], "T" )) {
    iTeam = 2;
   
 } else if ( caseInsensitiveStringCompare(args[2], "CT" )) {
@@ -499,7 +499,6 @@ if ( caseInsensitiveStringCompare(args[2], "T" )) {
    iTeam = 1;
    //strcpy(cTeam, "SPEC");
 }
-
 
 	int iCommandPlayer = player ? player->GetPlayerSlot() : -1;
 	int iNumClients = 0;
@@ -513,11 +512,10 @@ if ( caseInsensitiveStringCompare(args[2], "T" )) {
 		return;
 	}
 
-	int iTeam = V_StringToInt32(args[2], -1);
 
 	if (iTeam < CS_TEAM_NONE || iTeam > CS_TEAM_CT)
 	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Invalid team specified, range is 0-3.");
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Invalid team specified, use spec, t, ct.");
 		return;
 	}
 
