@@ -63,7 +63,7 @@ void UnregisterEventListeners()
 }
 
 // CONVAR_TODO
-bool g_bForceCT = true;
+bool g_bForceCT = false; //edited from true
 
 CON_COMMAND_F(c_force_ct, "toggle forcing CTs on every round", FCVAR_SPONLY | FCVAR_LINKED_CONCOMMAND)
 {
@@ -108,6 +108,7 @@ GAME_EVENT_F(player_team)
 // CONVAR_TODO: have a convar for forcing debris collision
 
 GAME_EVENT_F(player_spawn)
+GAME_EVENT_F(player_spawn)
 {
 	CCSPlayerController *pController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
 
@@ -124,15 +125,6 @@ GAME_EVENT_F(player_spawn)
 		if (!pController || !pController->m_bPawnIsAlive())
 			return -1.0f;
 
-				if (!pController)
-			return;
-		int iPlayer = pController->GetPlayerSlot();
-		ZEPlayer* pZEPlayer = g_playerManager->GetPlayer(iPlayer);
-
-		if (pZEPlayer)
-		{
-			pZEPlayer->SetUsedMedkit(false);
-		}
 		CBasePlayerPawn *pPawn = pController->GetPawn();
 
 		// Just in case somehow there's health but the player is, say, an observer
