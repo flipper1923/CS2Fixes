@@ -136,3 +136,20 @@ CON_COMMAND_CHAT(medic, "medic")
 
 	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXM"Medkit used! Your health is now %d", health);
 }
+CON_COMMAND_CHAT(stats, "get your stats")
+{
+	if (!player)
+		return;
+
+	CSMatchStats_t *stats = &player->m_pActionTrackingServices->m_matchStats();
+
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS"Kills: %d", stats->m_iKills.Get());
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS"Deaths: %d", stats->m_iDeaths.Get());
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS"Assists: %d", stats->m_iAssists.Get());
+	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIXS"Damage: %d", stats->m_iDamage.Get());
+}
+
+CON_COMMAND_CHAT(say, "say something using console")
+{
+	ClientPrintAll(HUD_PRINTTALK, "%s", args.ArgS());
+}
