@@ -157,8 +157,8 @@ void ParseChatCommand(const char *pMessage, CCSPlayerController *pController)
 	}
 	else
 	{
-		ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIX"This command does not exist.");
-		//ParseWeaponCommand(pController, args[0]);
+		//ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIX"This command does not exist.");
+		ParseWeaponCommand(pController, args[0]);
 	}
 }
 
