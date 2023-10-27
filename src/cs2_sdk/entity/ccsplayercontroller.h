@@ -21,6 +21,9 @@
 
 #include "cbaseplayercontroller.h"
 #include "services.h"
+#include "../playermanager.h"
+
+extern CEntitySystem* g_pEntitySystem;
 
 class CCSPlayerController : public CBasePlayerController
 {
@@ -33,5 +36,38 @@ public:
 	SCHEMA_FIELD(int, m_iScore)
 	SCHEMA_FIELD(int, m_iMVPs)
 
-	static CCSPlayerController* FromPawn(CCSPlayerPawn* pawn) { return (CCSPlayerController*)pawn->m_hController().Get(); }
+	static CCSPlayerController* FromPawn(CCSPlayerPawn* pawn) {
+		return (CCSPlayerController*)pawn->m_hController().Get();
+	}
+
+	static CCSPlayerController* FromSlot(CPlayerSlot slot)
+	{
+		return (CCSPlayerController*)g_pEntitySystem->GetBaseEntity(CEntityIndex(slot.Get() + 1));
+	}
+
+	ZEPlayer* GetZEPlayer()
+	{
+		return g_playerManager->GetPlayer(GetPlayerSlot());
+	}
+
+	void ChangeTeam(int iTeam)
+	{
+		static int offset = g_GameConfig->GetOffset("CCSPlayerController_ChangeTeam");
+		CALL_VIRTUAL(void, offset, this, iTeam);
+	}
+
+	void SwitchTeam(int iTeam)
+	{
+		if (!IsController())
+			return;
+
+		if (iTeam == CS_TEAM_SPECTATOR)
+		{
+			ChangeTeam(iTeam);
+		}
+		else
+		{
+			addresses::CCSPlayerController_SwitchTeam(this, iTeam);
+		}
+	}
 };
