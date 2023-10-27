@@ -471,102 +471,35 @@ CON_COMMAND_CHAT_FLAGS(slay, "slay a player", ADMFLAG_SLAY)
 
 	PrintMultiAdminAction(nType, pszCommandPlayerName, "slayed");
 }
-
-CON_COMMAND_CHAT_FLAGS(goto, "teleport to a player", ADMFLAG_SLAY)
-{
-	// Only players can use this command at all
-	if (!player)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You cannot use this command from the server console.");
-		return;
-	}
-
-	if (args.ArgC() < 2)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Usage: !goto <name>");
-		return;
-	}
-
-	int iNumClients = 0;
-	int pSlots[MAXPLAYERS];
-
-	if (g_playerManager->TargetPlayerString(player->GetPlayerSlot(), args[1], iNumClients, pSlots) != ETargetType::PLAYER || iNumClients > 1)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Target too ambiguous.");
-		return;
-	}
-
-	if (!iNumClients)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Target not found.");
-		return;
-	}
-
-	for (int i = 0; i < iNumClients; i++)
-	{
-		CCSPlayerController* pTarget = CCSPlayerController::FromSlot(pSlots[i]);
-
-		if (!pTarget)
-			continue;
-
-		Vector newOrigin = pTarget->GetPawn()->GetAbsOrigin();
-
-		player->GetPawn()->Teleport(&newOrigin, nullptr, nullptr);
-
-		PrintSingleAdminAction(player->GetPlayerName(), pTarget->GetPlayerName(), "teleported to");
-	}
+//****************************************************MOVE******************************************************
+bool caseInsensitiveStringCompare( const std::string& str1, const std::string& str2 ) {
+    std::string str1Cpy( str1 );
+    std::string str2Cpy( str2 );
+    std::transform( str1Cpy.begin(), str1Cpy.end(), str1Cpy.begin(), ::tolower );
+    std::transform( str2Cpy.begin(), str2Cpy.end(), str2Cpy.begin(), ::tolower );
+    return ( str1Cpy == str2Cpy );
 }
-
-CON_COMMAND_CHAT_FLAGS(bring, "bring a player", ADMFLAG_SLAY)
-{
-	if (!player)
-	{
-		ClientPrint(player, HUD_PRINTCONSOLE, CHAT_PREFIX "You cannot use this command from the server console.");
-		return;
-	}
-
-	if (args.ArgC() < 2)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Usage: !bring <name>");
-		return;
-	}
-
-	int iNumClients = 0;
-	int pSlots[MAXPLAYERS];
-
-	ETargetType nType = g_playerManager->TargetPlayerString(player->GetPlayerSlot(), args[1], iNumClients, pSlots);
-
-	if (!iNumClients)
-	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Target not found.");
-		return;
-	}
-
-	for (int i = 0; i < iNumClients; i++)
-	{
-		CCSPlayerController* pTarget = CCSPlayerController::FromSlot(pSlots[i]);
-
-		if (!pTarget)
-			continue;
-
-		Vector newOrigin = player->GetPawn()->GetAbsOrigin();
-
-		pTarget->GetPawn()->Teleport(&newOrigin, nullptr, nullptr);
-
-		if (nType < ETargetType::ALL)
-			PrintSingleAdminAction(player->GetPlayerName(), pTarget->GetPlayerName(), "brought");
-	}
-
-	PrintMultiAdminAction(nType, player->GetPlayerName(), "brought");
-}
-
-CON_COMMAND_CHAT_FLAGS(setteam, "set a player's team", ADMFLAG_SLAY)
+CON_COMMAND_CHAT_FLAGS(move, "set a player's team", ADMFLAG_SLAY)
 {
 	if (args.ArgC() < 3)
 	{
 		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Usage: !setteam <name> <team (0-3)>");
 		return;
 	}
+
+	int iTeam = -1;
+
+if ( caseInsensitiveStringCompare(args[2], "T" )) {
+   iTeam = 2;
+  
+} else if ( caseInsensitiveStringCompare(args[2], "CT" )) {
+   iTeam = 3;
+   
+} else if ( caseInsensitiveStringCompare(args[2], "SPEC" )) {
+   iTeam = 1;
+   //strcpy(cTeam, "SPEC");
+}
+
 
 	int iCommandPlayer = player ? player->GetPlayerSlot() : -1;
 	int iNumClients = 0;
@@ -606,12 +539,82 @@ CON_COMMAND_CHAT_FLAGS(setteam, "set a player's team", ADMFLAG_SLAY)
 
 		if (nType < ETargetType::ALL)
 			PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "moved", szAction);
+			//*************************slay********************
+		pTarget->GetPawn()->CommitSuicide(false, true);
 	}
 
 	PrintMultiAdminAction(nType, pszCommandPlayerName, "moved", szAction);
 }
 
-CON_COMMAND_CHAT_FLAGS(noclip, "toggle noclip on yourself", ADMFLAG_SLAY | ADMFLAG_CHEATS)
+
+/*
+CON_COMMAND_CHAT_FLAGS(move, "move a player's team", ADMFLAG_SLAY)
+{
+
+		if (args.ArgC() < 3)
+		{
+			ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX" Usage: !move <name> <team (t,ct,spec)>");
+			return;
+		}
+	}
+
+	int iNumClients = 0;
+	int pSlots[MAXPLAYERS];
+
+	ETargetType nType = g_playerManager->TargetPlayerString(iCommandPlayer, args[1], iNumClients, pSlots);
+
+	if (!iNumClients)
+	{
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Target not found.");
+		return;
+	}
+	int iTeam = -1;
+
+if ( caseInsensitiveStringCompare(args[2], "T" )) {
+   iTeam = 2;
+  
+} else if ( caseInsensitiveStringCompare(args[2], "CT" )) {
+   iTeam = 3;
+   
+} else if ( caseInsensitiveStringCompare(args[2], "SPEC" )) {
+   iTeam = 1;
+   //strcpy(cTeam, "SPEC");
+}
+
+	// int iTeam = V_StringToInt32(args[2], -1);
+
+	if (iTeam < CS_TEAM_NONE || iTeam > CS_TEAM_CT)
+	{
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Invalid team specified, use t,ct,spec");
+		return;
+	}
+
+	const char *pszCommandPlayerName = player ? player->GetPlayerName() : "Console";
+
+	constexpr const char *teams[] = {"none", "spectators", "terrorists", "counter-terrorists"};
+
+	char szAction[64];
+	V_snprintf(szAction, sizeof(szAction), " to %s.", teams[iTeam]);
+
+	for (int i = 0; i < iNumClients; i++)
+	{
+		CCSPlayerController *pTarget = (CCSPlayerController *)g_pEntitySystem->GetBaseEntity((CEntityIndex)(pSlots[i] + 1));
+
+		if (!pTarget)
+			continue;
+
+		addresses::CCSPlayerController_SwitchTeam(pTarget, iTeam);
+
+		if (nType < ETargetType::ALL)
+			PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "moved", szAction);
+			//*************************slay********************
+		pTarget->GetPawn()->CommitSuicide(false, true);
+	}
+
+	PrintMultiAdminAction(nType, pszCommandPlayerName, "moved", szAction);
+}*/
+//******************************************END MOVE************************************************
+CON_COMMAND_CHAT_FLAGS(noclip, "toggle noclip on yourself", ADMFLAG_ROOT)
 {
 	if (!player)
 	{

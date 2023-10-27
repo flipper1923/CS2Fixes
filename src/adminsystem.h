@@ -22,6 +22,9 @@
 #include "utlvector.h"
 #include "playermanager.h"
 #include <ctime>
+#include <string>
+#include <cstring>
+#include <algorithm>
 
 #define ADMFLAG_NONE		(0)
 #define ADMFLAG_RESERVATION (1 << 0)  // a
