@@ -647,7 +647,7 @@ CON_COMMAND_CHAT_FLAGS(silence, "mutes a player", ADMFLAG_CHAT)
 
 /*******************************************end silence******************************************/
 /*******************************************unsilence********************************************/
-CON_COMMAND_CHAT_FLAGS(unmute, "unsilence a player", ADMFLAG_CHAT)
+CON_COMMAND_CHAT_FLAGS(unsilence, "unsilence a player", ADMFLAG_CHAT)
 {
 	if (args.ArgC() < 2)
 	{
@@ -692,7 +692,7 @@ CON_COMMAND_CHAT_FLAGS(unmute, "unsilence a player", ADMFLAG_CHAT)
 	}
 
 	g_pAdminSystem->SaveInfractions();
-	
+
 	for (int i = 0; i < iNumClients; i++)
 	{
 		CCSPlayerController* pTarget = CCSPlayerController::FromSlot(pSlot[i]);
@@ -719,7 +719,7 @@ CON_COMMAND_CHAT_FLAGS(unmute, "unsilence a player", ADMFLAG_CHAT)
 
 	PrintMultiAdminAction(nType, pszCommandPlayerName, "unsilenced");
 }
-
+/**********************************end unsilence*******************************************************/
 CON_COMMAND_CHAT_FLAGS(noclip, "toggle noclip on yourself", ADMFLAG_ROOT)
 {
 	if (!player)
