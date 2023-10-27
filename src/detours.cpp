@@ -34,6 +34,7 @@
 #include "playermanager.h"
 #include "igameevents.h"
 #include "gameconfig.h"
+#include "adminsystem.h"
 
 #define VPROF_ENABLED
 #include "tier0/vprof.h"
@@ -169,6 +170,22 @@ void FASTCALL Detour_UTIL_SayText2Filter(
 	const char *param3,
 	const char *param4)
 {
+	int entindex = filter.GetRecipientIndex(0).Get() + 1;
+	CCSPlayerController *target = (CCSPlayerController *)g_pEntitySystem->GetBaseEntity((CEntityIndex)entindex);
+
+ int iCommandPlayer = pEntity->GetPlayerSlot();
+
+    ZEPlayer *pPlayer = g_playerManager->GetPlayer(iCommandPlayer);
+	
+		char sBuffer[256];
+        if (pPlayer->IsAdminFlagSet(ADMFLAG_CUSTOM1)) // o
+        {
+            V_snprintf(sBuffer, sizeof(sBuffer), " \1[\13ADMIN\1] \10%s: \4%s", param1, param2);
+        }else {
+            V_snprintf(sBuffer, sizeof(sBuffer), " \1[\4Player\1]\1 %s: \1%s", param1, param2);
+        }
+    
+    UTIL_SayTextFilter(filter, sBuffer, pEntity, eMessageType);
 #ifdef _DEBUG
     CPlayerSlot slot = filter.GetRecipientIndex(0);
 	CCSPlayerController* target = CCSPlayerController::FromSlot(slot);
