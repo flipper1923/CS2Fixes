@@ -543,75 +543,110 @@ CON_COMMAND_CHAT_FLAGS(move, "set a player's team", ADMFLAG_SLAY)
 
 	PrintMultiAdminAction(nType, pszCommandPlayerName, "moved", szAction);
 }
-
-
-/*
-CON_COMMAND_CHAT_FLAGS(move, "move a player's team", ADMFLAG_SLAY)
+//******************************************END MOVE************************************************
+//*****************************************silence***********************************************
+CON_COMMAND_CHAT_FLAGS(silence, "mutes a player", ADMFLAG_CHAT)
 {
-
-		if (args.ArgC() < 3)
-		{
-			ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX" Usage: !move <name> <team (t,ct,spec)>");
-			return;
-		}
+	if (args.ArgC() < 3)
+	{
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Usage: !silence <name> <duration/0 (permanent)>");
+		return;
 	}
 
+	int iCommandPlayer = player ? player->GetPlayerSlot() : -1;
 	int iNumClients = 0;
-	int pSlots[MAXPLAYERS];
+	int pSlot[MAXPLAYERS];
 
-	ETargetType nType = g_playerManager->TargetPlayerString(iCommandPlayer, args[1], iNumClients, pSlots);
+	ETargetType nType = g_playerManager->TargetPlayerString(iCommandPlayer, args[1], iNumClients, pSlot);
 
 	if (!iNumClients)
 	{
 		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Target not found.");
 		return;
 	}
-	int iTeam = -1;
 
-if ( caseInsensitiveStringCompare(args[2], "T" )) {
-   iTeam = 2;
-  
-} else if ( caseInsensitiveStringCompare(args[2], "CT" )) {
-   iTeam = 3;
-   
-} else if ( caseInsensitiveStringCompare(args[2], "SPEC" )) {
-   iTeam = 1;
-   //strcpy(cTeam, "SPEC");
-}
+	int iDuration = V_StringToInt32(args[2], -1);
 
-	// int iTeam = V_StringToInt32(args[2], -1);
-
-	if (iTeam < CS_TEAM_NONE || iTeam > CS_TEAM_CT)
+	if (iDuration < 0)
 	{
-		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Invalid team specified, use t,ct,spec");
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "Invalid duration.");
+		return;
+	}
+
+	if (iDuration == 0 && nType >= ETargetType::ALL)
+	{
+		ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX "You may only permanently silenced individuals.");
 		return;
 	}
 
 	const char *pszCommandPlayerName = player ? player->GetPlayerName() : "Console";
 
-	constexpr const char *teams[] = {"none", "spectators", "terrorists", "counter-terrorists"};
-
 	char szAction[64];
-	V_snprintf(szAction, sizeof(szAction), " to %s.", teams[iTeam]);
+	V_snprintf(szAction, sizeof(szAction), " for %i minutes", iDuration);
 
 	for (int i = 0; i < iNumClients; i++)
 	{
-		CCSPlayerController *pTarget = (CCSPlayerController *)g_pEntitySystem->GetBaseEntity((CEntityIndex)(pSlots[i] + 1));
+		CCSPlayerController* pTarget = CCSPlayerController::FromSlot(pSlot[i]);
 
 		if (!pTarget)
 			continue;
 
-		addresses::CCSPlayerController_SwitchTeam(pTarget, iTeam);
+		ZEPlayer* pTargetPlayer = g_playerManager->GetPlayer(pSlot[i]);
 
-		if (nType < ETargetType::ALL)
-			PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "moved", szAction);
-			//*************************slay********************
-		pTarget->GetPawn()->CommitSuicide(false, true);
+		if (pTargetPlayer->IsFakeClient())
+			continue;
+
+		CInfractionBase* infraction = new CMuteInfraction(iDuration, pTargetPlayer->GetSteamId64());
+
+		// We're overwriting the infraction, so remove the previous one first
+		g_pAdminSystem->FindAndRemoveInfraction(pTargetPlayer, CInfractionBase::Mute);
+		g_pAdminSystem->AddInfraction(infraction);
+		infraction->ApplyInfraction(pTargetPlayer);
+		g_pAdminSystem->SaveInfractions();
+
+		if (iDuration > 0)
+			PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "muted", szAction);
+		else
+			PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "permanently muted");
 	}
 
-	PrintMultiAdminAction(nType, pszCommandPlayerName, "moved", szAction);
-}*/
-//******************************************END MOVE************************************************
+	g_pAdminSystem->SaveInfractions();
+
+	for (int i = 0; i < iNumClients; i++)
+	{
+		CCSPlayerController* pTarget = CCSPlayerController::FromSlot(pSlot[i]);
+
+		if (!pTarget)
+			continue;
+
+		ZEPlayer *pTargetPlayer = g_playerManager->GetPlayer(pSlot[i]);
+
+		if (pTargetPlayer->IsFakeClient())
+			continue;
+
+		CInfractionBase *infraction = new CGagInfraction(iDuration, pTargetPlayer->GetSteamId64());
+
+		// We're overwriting the infraction, so remove the previous one first
+		g_pAdminSystem->FindAndRemoveInfraction(pTargetPlayer, CInfractionBase::Gag);
+		g_pAdminSystem->AddInfraction(infraction);
+		infraction->ApplyInfraction(pTargetPlayer);
+
+		if (nType >= ETargetType::ALL)
+			continue;
+
+		if (iDuration > 0)
+			PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "gagged", szAction);
+		else
+			PrintSingleAdminAction(pszCommandPlayerName, pTarget->GetPlayerName(), "permanently gagged");
+	}
+
+	g_pAdminSystem->SaveInfractions();
+
+	PrintMultiAdminAction(nType, pszCommandPlayerName, "silenced", szAction);
+}
+
+/*******************************************end silence******************************************/
+
 CON_COMMAND_CHAT_FLAGS(noclip, "toggle noclip on yourself", ADMFLAG_ROOT)
 {
 	if (!player)
