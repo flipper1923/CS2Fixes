@@ -108,7 +108,6 @@ GAME_EVENT_F(player_team)
 // CONVAR_TODO: have a convar for forcing debris collision
 
 GAME_EVENT_F(player_spawn)
-GAME_EVENT_F(player_spawn)
 {
 	CCSPlayerController *pController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
 
