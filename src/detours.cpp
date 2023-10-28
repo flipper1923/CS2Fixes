@@ -34,6 +34,7 @@
 #include "playermanager.h"
 #include "igameevents.h"
 #include "gameconfig.h"
+#include "adminsystem.h"
 
 #define VPROF_ENABLED
 #include "tier0/vprof.h"
@@ -176,7 +177,15 @@ void FASTCALL Detour_UTIL_SayText2Filter(
 	if (target)
 		Message("Chat from %s to %s: %s\n", param1, target->GetPlayerName(), param2);
 #endif
-
+    ZEPlayer *pPlayer = g_playerManager->GetPlayer(iCommandPlayer);
+	
+		char sBuffer[256];
+        if (pPlayer->IsAdminFlagSet(ADMFLAG_CUSTOM1)) // o
+        {
+            V_snprintf(sBuffer, sizeof(sBuffer), " \1[\13ADMIN\1] \10%s: \4%s", param1, param2);
+        }else {
+            V_snprintf(sBuffer, sizeof(sBuffer), " \1[\4Player\1]\1 %s: \1%s", param1, param2);
+        }
 	UTIL_SayText2Filter(filter, pEntity, eMessageType, msg_name, param1, param2, param3, param4);
 }
 
