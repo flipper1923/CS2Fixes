@@ -139,13 +139,9 @@ GAME_EVENT_F(player_spawn)
 		ZEPlayer* pZEPlayer = g_playerManager->GetPlayer(iPlayer);	//
 		if (pZEPlayer->IsAdminFlagSet(ADMFLAG_ROOT))				//
         {
-            pController->m_szClan("[OWNER]");     				//
-        } 
-		
-		 if (pZEPlayer->IsAdminFlagSet(ADMFLAG_PASSWORD))				//
-        {
             pController->m_szClan("[ADMIN]");     				//
-        }
+        } 
+
 
 
 		CBasePlayerPawn *pPawn = pController->GetPawn();
