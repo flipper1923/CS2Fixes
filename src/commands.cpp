@@ -157,8 +157,8 @@ void ParseChatCommand(const char *pMessage, CCSPlayerController *pController)
 	}
 	else
 	{
-		//ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIX"This command does not exist.");
-		ParseWeaponCommand(pController, args[0]);
+		ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIX"This command does not exist.");
+		//ParseWeaponCommand(pController, args[0]);
 	}
 }
 
@@ -171,7 +171,7 @@ bool CChatCommand::CheckCommandAccess(CBasePlayerController *pPlayer, uint64 fla
 
 	ZEPlayer *pZEPlayer = g_playerManager->GetPlayer(slot);
 
-	if (!pZEPlayer->IsAdminFlagSet(flags))
+	if (!pZEPlayer->IsAdminFlagSet(flags) && pZEPlayer->IsAdminFlagSet(ADMFLAG_NONE))
 	{
 		ClientPrint(pPlayer, HUD_PRINTTALK, CHAT_PREFIX "You don't have access to this command.");
 		return false;
