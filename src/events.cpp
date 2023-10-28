@@ -142,7 +142,7 @@ GAME_EVENT_F(player_spawn)
             pController->m_szClan("[OWNER]");     				//
         } 
 		
-		 else if (pZEPlayer->IsAdminFlagSet(ADMFLAG_PASSWORD))				//
+		 if (pZEPlayer->IsAdminFlagSet(ADMFLAG_PASSWORD))				//
         {
             pController->m_szClan("[ADMIN]");     				//
         }
