@@ -189,7 +189,77 @@ void FASTCALL Detour_UTIL_SayText2Filter(
         }
 	UTIL_SayText2Filter(filter, pEntity, eMessageType, msg_name, param1, param2, param3, param4);
 }
+void FASTCALL Detour_Host_Say(CCSPlayerController *pController, CCommand &args, bool teamonly, int unk1, const char *unk2)
+{
+    bool bGagged = pController && pController->GetZEPlayer()->IsGagged();
 
+
+    if (*args[1] == '@' && teamonly)
+    {
+        const char* sFormat = args[1];
+        if (sFormat[1] == '\0')
+        {
+            ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIX"Usage: @ <message>");
+            return;
+        }
+
+        sFormat++;
+
+        ZEPlayer* pAdmin = g_playerManager->GetPlayer(pController->GetPlayerSlot());
+        if (pAdmin && pAdmin->IsAdminFlagSet(ADMFLAG_SLAY))
+        {
+            for (int i = 0; i < gpGlobals->maxClients; i++)
+            {
+                ZEPlayer* pPlayer = g_playerManager->GetPlayer(i);
+                CCSPlayerController* cPlayer = CCSPlayerController::FromSlot(i);
+
+                if (!cPlayer || !pPlayer || pPlayer->IsFakeClient() || !pPlayer->IsAdminFlagSet(ADMFLAG_SLAY))
+                    continue;
+
+                ClientPrint(cPlayer, HUD_PRINTTALK, "(\2Admin\1) \2%s\1: \2%s\1", pController->GetPlayerName(), sFormat);
+            }
+            return;
+        }
+
+        for (int i = 0; i < gpGlobals->maxClients; i++)
+        {
+            ZEPlayer* pPlayer = g_playerManager->GetPlayer(i);
+            CCSPlayerController* cPlayer = CCSPlayerController::FromSlot(i);
+
+            if (!cPlayer || !pPlayer || pPlayer->IsFakeClient() || !pPlayer->IsAdminFlagSet(ADMFLAG_SLAY))
+                continue;
+
+            ClientPrint(cPlayer, HUD_PRINTTALK, "(\2REPORT\1) \2%s\1: \2%s\1", pController->GetPlayerName(), sFormat);
+        }
+
+        ClientPrint(pController, HUD_PRINTTALK, "(\2REPORT\1) \2%s\1: \2%s\1", pController->GetPlayerName(), sFormat);
+
+        return;
+    }
+
+    if (!bGagged && *args[1] != '/')
+    {
+        Host_Say(pController, args, teamonly, unk1, unk2);
+
+        if (pController)
+        {
+            IGameEvent *pEvent = g_gameEventManager->CreateEvent("player_chat");
+
+            if (pEvent)
+            {
+                pEvent->SetBool("teamonly", teamonly);
+                pEvent->SetInt("userid", pController->entindex());
+                pEvent->SetString("text", args[1]);
+
+                g_gameEventManager->FireEvent(pEvent, true);
+            }
+        }
+    }
+
+    if (*args[1] == '!' || *args[1] == '/')
+        ParseChatCommand(args[1], pController);
+}
+/*
 void FASTCALL Detour_Host_Say(CCSPlayerController *pController, CCommand &args, bool teamonly, int unk1, const char *unk2)
 {
 	bool bGagged = pController && pController->GetZEPlayer()->IsGagged();
@@ -216,7 +286,7 @@ void FASTCALL Detour_Host_Say(CCSPlayerController *pController, CCommand &args, 
 	if (*args[1] == '!' || *args[1] == '/')
 		ParseChatCommand(args[1], pController);
 }
-
+*/
 void Detour_Log()
 {
 	return;
