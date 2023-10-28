@@ -23,6 +23,8 @@
 #include "ctimer.h"
 #include "eventlistener.h"
 #include "entity/cbaseplayercontroller.h"
+#include "entity/ccsplayercontroller.h"
+#include "adminsystem.h"
 
 #include "tier0/memdbgon.h"
 #include "playermanager.h"
@@ -132,6 +134,14 @@ GAME_EVENT_F(player_spawn)
 
 		if (!pController || !pController->m_bPawnIsAlive())
 			return -1.0f;
+			
+		int iPlayer = pController->GetPlayerSlot();					//clan tag
+		ZEPlayer* pZEPlayer = g_playerManager->GetPlayer(iPlayer);	//
+
+		if (pZEPlayer->IsAdminFlagSet(ADMFLAG_ROOT))				//
+        {
+            pController->m_szClan("[TEST TAG]");     				//
+        }
 
 		CBasePlayerPawn *pPawn = pController->GetPawn();
 
