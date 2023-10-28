@@ -35,13 +35,10 @@
 
 #include "tier0/memdbgon.h"
 
-
 extern CEntitySystem *g_pEntitySystem;
 extern IVEngineServer2* g_pEngineServer2;
-extern int g_targetPawn;
-extern int g_targetController;
 extern ISteamHTTP* g_http;
-#include "addons.h":
+#include "addons.h"
 
 WeaponMapEntry_t WeaponMap[] = {
 	{"bizon",		  "weapon_bizon",			 1400, 26},
@@ -146,7 +143,7 @@ void ParseWeaponCommand(CCSPlayerController *pController, const char *pszWeaponN
 
 void ParseChatCommand(const char *pMessage, CCSPlayerController *pController)
 {
-	if (!pController)
+	if (!pController || !pController->IsConnected())
 		return;
 
 	CCommand args;
@@ -156,13 +153,31 @@ void ParseChatCommand(const char *pMessage, CCSPlayerController *pController)
 
 	if (g_CommandList.IsValidIndex(index))
 	{
-		g_CommandList[index](args, pController);
+		(*g_CommandList[index])(args, pController);
 	}
 	else
 	{
 		ClientPrint(pController, HUD_PRINTTALK, CHAT_PREFIX"This command does not exist.");
 		//ParseWeaponCommand(pController, args[0]);
 	}
+}
+
+bool CChatCommand::CheckCommandAccess(CBasePlayerController *pPlayer, uint64 flags)
+{
+	if (!pPlayer)
+		return false;
+
+	int slot = pPlayer->GetPlayerSlot();
+
+	ZEPlayer *pZEPlayer = g_playerManager->GetPlayer(slot);
+
+	if (!pZEPlayer->IsAdminFlagSet(flags))
+	{
+		ClientPrint(pPlayer, HUD_PRINTTALK, CHAT_PREFIX "You don't have access to this command.");
+		return false;
+	}
+
+	return true;
 }
 
 void ClientPrintAll(int hud_dest, const char *msg, ...)
@@ -176,6 +191,7 @@ void ClientPrintAll(int hud_dest, const char *msg, ...)
 	va_end(args);
 
 	addresses::UTIL_ClientPrintAll(hud_dest, buf, nullptr, nullptr, nullptr, nullptr);
+	ConMsg("%s\n", buf);
 }
 
 void ClientPrint(CBasePlayerController *player, int hud_dest, const char *msg, ...)
@@ -188,7 +204,10 @@ void ClientPrint(CBasePlayerController *player, int hud_dest, const char *msg, .
 
 	va_end(args);
 
-	addresses::ClientPrint(player, hud_dest, buf, nullptr, nullptr, nullptr, nullptr);
+	if (player)
+		addresses::ClientPrint(player, hud_dest, buf, nullptr, nullptr, nullptr, nullptr);
+	else
+		ConMsg("%s\n", buf);
 }
 
 CON_COMMAND_CHAT(sound, "toggle weapon sounds")
