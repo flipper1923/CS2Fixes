@@ -140,8 +140,12 @@ GAME_EVENT_F(player_spawn)
 
 		if (pZEPlayer->IsAdminFlagSet(ADMFLAG_ROOT))				//
         {
-            pController->m_szClan("[TEST TAG]");     				//
+            pController->m_szClan("[OWNER]");     				//
+        } else if (pZEPlayer->IsAdminFlagSet(ADMFLAG_GENERIC))				//
+        {
+            pController->m_szClan("[ADMIN]");     				//
         }
+		
 
 		CBasePlayerPawn *pPawn = pController->GetPawn();
 
