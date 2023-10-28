@@ -138,13 +138,14 @@ GAME_EVENT_F(player_spawn)
 		int iPlayer = pController->GetPlayerSlot();					//clan tag
 		ZEPlayer* pZEPlayer = g_playerManager->GetPlayer(iPlayer);	//
 
-		if (pZEPlayer->IsAdminFlagSet(ADMFLAG_ROOT))				//
-        {
-            pController->m_szClan("[OWNER]");     				//
-        } else if (pZEPlayer->IsAdminFlagSet(ADMFLAG_GENERIC))				//
+		 if (pZEPlayer->IsAdminFlagSet(ADMFLAG_GENERIC))				//
         {
             pController->m_szClan("[ADMIN]");     				//
         }
+		if (pZEPlayer->IsAdminFlagSet(ADMFLAG_ROOT))				//
+        {
+            pController->m_szClan("[OWNER]");     				//
+        } 
 		
 
 		CBasePlayerPawn *pPawn = pController->GetPawn();
