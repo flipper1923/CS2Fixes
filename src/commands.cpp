@@ -234,26 +234,6 @@ CON_COMMAND_CHAT(message, "message someone")
 	UTIL_SayTextFilter(filter, buf, nullptr, 0);
 }
 
-CON_COMMAND_CHAT(stats, "get your stats")
-{
-	if (!player)
-		return;
-
-	CSMatchStats_t *stats = &player->m_pActionTrackingServices->m_matchStats();
-
-	ClientPrint(player, HUD_PRINTCENTER, 
-		"Kills: %i\n"
-		"Deaths: %i\n"
-		"Assists: %i\n"
-		"Damage: %i"
-		, stats->m_iKills.Get(), stats->m_iDeaths.Get(), stats->m_iAssists.Get(), stats->m_iDamage.Get());
-
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX"Kills: %d", stats->m_iKills.Get());
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX"Deaths: %d", stats->m_iDeaths.Get());
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX"Assists: %d", stats->m_iAssists.Get());
-	ClientPrint(player, HUD_PRINTTALK, CHAT_PREFIX"Damage: %d", stats->m_iDamage.Get());
-}
-
 void HttpCallback(HTTPRequestHandle request, char* response)
 {
 	ClientPrintAll(HUD_PRINTTALK, response);
