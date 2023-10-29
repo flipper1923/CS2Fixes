@@ -181,11 +181,11 @@ void FASTCALL Detour_UTIL_SayText2Filter(
     ZEPlayer *pPlayer = g_playerManager->GetPlayer(iCommandPlayer);
 	
 		char sBuffer[256];
-        if (pPlayer->IsAdminFlagSet(ADMFLAG_CUSTOM1)) // o
+        if (pPlayer->IsAdminFlagSet(ADMFLAG_ROOT)) // o
         {
-            V_snprintf(sBuffer, sizeof(sBuffer), " \1[\13ADMIN\1] \10%s: \4%s", param1, param2);
+            V_snprintf(sBuffer, sizeof(sBuffer), "\1[\13ADMIN\1] \3%s: \4%s", param1, param2);
         }else {
-            V_snprintf(sBuffer, sizeof(sBuffer), " \1[\4Player\1]\1 %s: \1%s", param1, param2);
+            V_snprintf(sBuffer, sizeof(sBuffer), "%s: \1%s", param1, param2);
         }
 	UTIL_SayText2Filter(filter, pEntity, eMessageType, msg_name, param1, param2, param3, param4);
 }
