@@ -265,7 +265,7 @@ CON_COMMAND_CHAT(http, "test an HTTP request")
 	else if (strcmp(args[1], "post") == 0)
 		g_HTTPManager.POST(args[2], args[3], &HttpCallback);
 }
-#endif // _DEBUG
+
 
 // Lookup a weapon classname in the weapon map and "initialize" it.
 // Both m_bInitialized and m_iItemDefinitionIndex need to be set for a weapon to be pickable and not crash clients,
