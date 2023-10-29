@@ -150,23 +150,6 @@ GAME_EVENT_F(player_spawn)
 	});
 }
 
-GAME_EVENT_F(player_hurt)
-{
-    int userID = pEvent->GetInt("userid");
-    int attackerID = pEvent->GetInt("attacker");
-    int damageHealth = pEvent->GetInt("dmg_health");
-
-    CBasePlayerController* pDied = static_cast<CBasePlayerController*>(pEvent->GetPlayerController(userID));
-    CBasePlayerController* pKiller = static_cast<CBasePlayerController*>(pEvent->GetPlayerController(attackerID));
-
-    char buffer[128];
-    sprintf(buffer, "HP: -%d", damageHealth);
-
-    if (pKiller != nullptr)
-    {
-        ClientPrint(pKiller, HUD_PRINTCENTER, buffer);
-    }
-}
 
 GAME_EVENT_F(player_hurt)
 {
