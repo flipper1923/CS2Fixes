@@ -115,15 +115,7 @@ GAME_EVENT_F(player_spawn)
 
 	if (!pController)
 		return;
-//*******************************Medic****************************
-	int iPlayer = pController->GetPlayerSlot();
-		ZEPlayer* pZEPlayer = g_playerManager->GetPlayer(iPlayer);
-
-		if (pZEPlayer)
-		{
-			pZEPlayer->SetUsedMedkit(false);
-		}
-//*******************************Medic****************************
+	
 		CBasePlayerPawn *pPawn = pController->GetPawn();
 	CHandle<CCSPlayerController> hController = pController->GetHandle();
 
@@ -138,9 +130,9 @@ GAME_EVENT_F(player_spawn)
 		int iPlayer = pController->GetPlayerSlot();					//clan tag
 		ZEPlayer* pZEPlayer = g_playerManager->GetPlayer(iPlayer);	//
 		if (pZEPlayer->IsAdminFlagSet(ADMFLAG_ROOT))				//
-        {
-            pController->m_szClan("[ADMIN]");     				//
-        } 
+        	{
+            		pController->m_szClan("[ADMIN]");     				//
+        	} 
 
 
 
