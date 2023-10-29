@@ -156,16 +156,15 @@ GAME_EVENT_F(player_hurt)
     int attackerID = pEvent->GetInt("attacker");
     int damageHealth = pEvent->GetInt("dmg_health");
 
-    CBasePlayerController* pPlayer = static_cast<CBasePlayerController*>(g_playerManager->GetPlayer(pController->GetPlayerSlot()));
-    CBasePlayerController* died = static_cast<CBasePlayerController*>(pEvent->GetPlayerController(userID));
-    CBasePlayerController* killer = static_cast<CBasePlayerController*>(pEvent->GetPlayerController(attackerID));
+    CBasePlayerController* pController = static_cast<CBasePlayerController*>(pEvent->GetPlayerController(userID));
+    ZEPlayer* pPlayer = g_playerManager->GetPlayer(pController->GetPlayerSlot());
 
-    if (died && killer)
-    {
-        char buffer[128];
-        sprintf(buffer, "HP: -%d", damageHealth);
-        ClientPrint(killer, HUD_PRINTCENTER, buffer);
-    }
+    CBasePlayerController* died = static_cast<CBasePlayerController*>(pEvent->GetPlayerController(userID));
+    CBasePlayerController* killer = static_cast<CBasePlayerController*>(pEvent->GetPlayerController(attackerID);
+
+    char buffer[128];
+    sprintf(buffer, "HP: -%d", damageHealth);
+    ClientPrint(killer, HUD_PRINTCENTER, buffer);
 }
 
 GAME_EVENT_F(player_hurt)
