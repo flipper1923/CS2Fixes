@@ -136,15 +136,15 @@ GAME_EVENT_F(player_spawn)
 
 
 
-		CBasePlayerPawn *pPawn = pController->GetPawn();
+		//CBasePlayerPawn *pPawn = pController->GetPawn();
 
 		// Just in case somehow there's health but the player is, say, an observer
-		if (!pPawn || !pPawn->IsAlive())
-			return -1.0f;
+		//if (!pPawn || !pPawn->IsAlive())
+		//	return -1.0f;
 
-		pPawn->m_pCollision->m_collisionAttribute().m_nCollisionGroup = COLLISION_GROUP_DEBRIS;
-		pPawn->m_pCollision->m_CollisionGroup = COLLISION_GROUP_DEBRIS;
-		pPawn->CollisionRulesChanged();
+		//pPawn->m_pCollision->m_collisionAttribute().m_nCollisionGroup = COLLISION_GROUP_DEBRIS;
+		//pPawn->m_pCollision->m_CollisionGroup = COLLISION_GROUP_DEBRIS;
+		//pPawn->CollisionRulesChanged();
 
 		return -1.0f;
 	});
